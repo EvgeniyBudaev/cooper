@@ -1,10 +1,7 @@
+import {CatalogPage} from "~/pages";
+
 function Catalog() {
-	return (
-		<div>
-			<h1>Catalog</h1>
-			<p>Welcome to the Catalog page</p>
-		</div>
-	);
+	return <CatalogPage />;
 }
 
 export default Catalog;

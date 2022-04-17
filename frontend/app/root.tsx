@@ -12,10 +12,12 @@ import {
 	Scripts,
 	ScrollRestoration,
 } from "@remix-run/react";
+import {useLocation} from "@remix-run/react";
 
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 import {getUser} from "./session.server";
 import {Layout} from "~/components";
+import {ROUTES} from "~/constants/routes";
 
 export const links: LinksFunction = () => {
 	return [{rel: "stylesheet", href: tailwindStylesheetUrl}];
@@ -38,6 +40,8 @@ export const loader: LoaderFunction = async ({request}) => {
 };
 
 export default function App() {
+	const location = useLocation();
+
 	return (
 		<html lang="ru" className="h-full">
 		<head>
@@ -45,7 +49,11 @@ export default function App() {
 			<Links/>
 		</head>
 		<body className="h-full">
-		<Outlet/>
+		{location.pathname === ROUTES.HOME ? <Outlet/> : (
+			<Layout>
+				<Outlet/>
+			</Layout>
+		)}
 		<ScrollRestoration/>
 		<Scripts/>
 		<LiveReload/>
