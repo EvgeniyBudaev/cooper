@@ -37,6 +37,51 @@ module.exports = {
 					"&:hover": {
 						boxShadow: "0px 5px 10px 2px rgba(34, 60, 80, 0.2)",
 					},
+				},
+				".breadcrumbs": {
+					"&__list": {
+						display: "inline-flex",
+						listStyleType: "none",
+					},
+					"&__breadcrumb": {
+						position: "relative",
+						"&-home a": {
+							color: "#031412",
+							textDecoration: "none",
+							fontWeight: "600",
+
+							"&:hover": {
+								background: "linear-gradient(to right, #5E3928, #E4A16F)",
+								backgroundClip: "text",
+								textFillColor: "transparent",
+							},
+						},
+					},
+					"&__breadcrumb:not(:last-of-type)::after": {
+						content: "/",
+						margin: "0 8px",
+						fontSize: "1.5vw",
+					},
+					"&__breadcrumb a": {
+						color: "#031412",
+						textDecoration: "none",
+						fontWeight: "600",
+
+						"&:last-child": {
+							fontWeight: "800",
+							cursor: "default",
+
+							"&:hover": {
+								background: "none",
+							},
+						},
+
+						"&:hover": {
+							background: "linear-gradient(to right, #5E3928, #E4A16F)",
+							backgroundClip: "text",
+							textFillColor: "transparent",
+						},
+					}
 				}
 			})
 		}),

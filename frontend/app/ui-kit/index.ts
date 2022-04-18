@@ -1,3 +1,4 @@
+import { Breadcrumbs } from "./Breadcrumbs";
 import Button from "./Button";
 
-export { Button };
+export { Breadcrumbs, Button };

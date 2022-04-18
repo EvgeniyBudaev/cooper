@@ -1,0 +1,24 @@
+.breadcrumbs__list {
+	display: inline-flex;
+	padding: 1rem;
+	background-color: #f2f2f2;
+	list-style-type: none;
+	border-radius: 1rem;
+}
+
+.breadcrumbs__breadcrumb {
+	background-color: #f2f2f2;
+}
+
+.breadcrumbs__breadcrumb a {
+	text-decoration: none;
+	font-size: 1.5vw;
+	color: red;
+	background-color: #f2f2f2;
+}
+
+.breadcrumbs__breadcrumb:not(:last-of-type)::after {
+	content: ">";
+	margin: 0 0.5rem;
+	font-size: 1.5vw;
+}
