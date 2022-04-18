@@ -9,7 +9,7 @@ export const Header: React.FC = () => {
 	const location = useLocation();
 
 	return (
-		<div className={cn("pt-5", {"bg-[url('/assets/images/navbar.jpg')]": location.pathname !== ROUTES.HOME})}>
+		<div className={cn("py-10", {"bg-[url('/assets/images/navbar.jpg')]": location.pathname !== ROUTES.HOME})}>
 			<Container>
 				<nav className="flex items-center">
 					<NavLink className="mr-20" to="/">
