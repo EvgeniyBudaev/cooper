@@ -1,12 +1,18 @@
 const express = require('express');
 const {check} = require('express-validator');
 const productsControllers = require('../controllers/products-controllers');
+const checkAuth = require('../middleware/check-auth');
 
 const router = express.Router();
 
+router.get('/', productsControllers.getProducts);
+
 router.get('/:productSlug', productsControllers.getProductByProductSlug);
 
-router.get('/catalog/:catalogSlug', productsControllers.getProductsByCatalogSlug);
+router.get(
+	'/catalog/:catalogSlug', productsControllers.getProductsByCatalogSlug);
+
+router.use(checkAuth);
 
 router.post(
 	'/',

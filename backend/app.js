@@ -4,7 +4,8 @@ const mongoose = require('mongoose');
 const productsRoutes = require('./routes/products-routes');
 const usersRoutes = require('./routes/users-routes');
 const HttpError = require("./models/http-error");
-const mongoPractice = require('./mongoose');
+
+require('dotenv').config();
 
 const app = express();
 
@@ -12,11 +13,15 @@ app.use(bodyParser.json());
 
 const PORT = 5000;
 
+app.use((req, res, next) => {
+	res.setHeader('Access-Control-Allow-Origin', '*');
+	res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+	res.setHeader('Access-Control-Allow-Methods', 'GET, POST, PATCH, DELETE, OPTIONS');
+	next();
+});
+
 app.use('/api/products', productsRoutes);
 app.use('/api/users', usersRoutes);
-
-app.post('/products', mongoPractice.createProduct);
-app.get('/products', mongoPractice.getProducts);
 
 app.use((req, res, next) => {
 	throw new HttpError('Could not find this route.', 404);
@@ -32,7 +37,7 @@ app.use((error, req, res, next) => {
 
 mongoose
 	.connect(
-		''
+		process.env.MONGODB_URI
 	).then(() => {
 	console.log('Connected to database!');
 }).catch(() => {

@@ -2,6 +2,11 @@ const {validationResult} = require('express-validator');
 const HttpError = require("../models/http-error");
 const Product = require('../models/product');
 
+const getProducts = async (req, res, next) => {
+	const products = await Product.find().exec();
+	res.json(products);
+};
+
 const getProductByProductSlug = async (req, res, next) => {
 	const productSlug = req.params.productSlug;
 	let product;
@@ -128,6 +133,7 @@ const deleteProduct = async (req, res, next) => {
 	res.status(200).json({message: 'Deleted product'});
 };
 
+exports.getProducts = getProducts;
 exports.getProductByProductSlug = getProductByProductSlug;
 exports.getProductsByCatalogSlug = getProductsByCatalogSlug;
 exports.createProduct = createProduct;
