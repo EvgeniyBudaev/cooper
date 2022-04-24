@@ -10,27 +10,25 @@ router.get('/', productsControllers.getProducts);
 router.get('/:productSlug', productsControllers.getProductByProductSlug);
 
 router.get(
-	'/catalog/:catalogSlug', productsControllers.getProductsByCatalogSlug);
+	'/category/:categorySlug', productsControllers.getProductsByCategorySlug);
 
 router.use(checkAuth);
 
 router.post(
-	'/',
+	'/create',
 	[
-		check('catalogSlug').not().isEmpty(),
-		check('productSlug').not().isEmpty(),
 		check('title').not().isEmpty(),
 		check('price').not().isEmpty(),
-		check('count').not().isEmpty(),
+		check('quantity').not().isEmpty(),
 		check('image').not().isEmpty(),
 	],
 	productsControllers.createProduct,
 );
 
-router.patch('/:productSlug', [
+router.patch('/edit/:productSlug', [
 	check('title').not().isEmpty(),
 	check('price').not().isEmpty(),
-	check('count').not().isEmpty(),
+	check('quantity').not().isEmpty(),
 	check('image').not().isEmpty(),
 ], productsControllers.updateProduct);
 

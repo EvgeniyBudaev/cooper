@@ -1,7 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const fs = require('fs');
+const path = require('path');
 const mongoose = require('mongoose');
 const productsRoutes = require('./routes/products-routes');
+const categoriesRoutes = require('./routes/categories-routes');
 const usersRoutes = require('./routes/users-routes');
 const HttpError = require("./models/http-error");
 
@@ -11,7 +14,7 @@ const app = express();
 
 app.use(bodyParser.json());
 
-const PORT = 5000;
+app.use('/uploads/images', express.static(path.join('uploads', 'images')));
 
 app.use((req, res, next) => {
 	res.setHeader('Access-Control-Allow-Origin', '*');
@@ -20,6 +23,7 @@ app.use((req, res, next) => {
 	next();
 });
 
+app.use('/api/categories', categoriesRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/users', usersRoutes);
 
@@ -28,6 +32,11 @@ app.use((req, res, next) => {
 });
 
 app.use((error, req, res, next) => {
+	if (req.file) {
+		fs.unlink(req.file.path, err => {
+			console.log(err);
+		});
+	}
 	if (res.headerSent) {
 		return next(error);
 	}
@@ -35,6 +44,7 @@ app.use((error, req, res, next) => {
 	res.json({message: error.message || 'An unknown error occurred!'});
 });
 
+// Connecting to database
 mongoose
 	.connect(
 		process.env.MONGODB_URI
@@ -44,6 +54,6 @@ mongoose
 	console.log('Connection failed!');
 });
 
-app.listen(PORT, () => {
-	console.log(`Server is running on port ${PORT}`);
+app.listen(process.env.PORT, () => {
+	console.log(`Server is running on port ${process.env.PORT}`);
 });

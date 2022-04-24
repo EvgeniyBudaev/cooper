@@ -1,10 +1,23 @@
 const {validationResult} = require('express-validator');
+const slugify = require('slugify');
 const HttpError = require("../models/http-error");
 const Product = require('../models/product');
 
 const getProducts = async (req, res, next) => {
-	const products = await Product.find().exec();
-	res.json(products);
+	try {
+		const {page} = req.query;
+		const currentPage = page || 1;
+		const perPage = 3;
+		const products = await Product.find()
+			.skip((currentPage - 1) * perPage)
+			.populate('category')
+			.limit(perPage)
+			.exec();
+		res.json(products);
+	} catch (err) {
+		const error = new HttpError(err, 500);
+		return next(error);
+	}
 };
 
 const getProductByProductSlug = async (req, res, next) => {
@@ -26,11 +39,11 @@ const getProductByProductSlug = async (req, res, next) => {
 	res.json({product: product.toObject({getters: true})});
 };
 
-const getProductsByCatalogSlug = async (req, res, next) => {
-	const catalogSlug = req.params.catalogSlug;
+const getProductsByCategorySlug = async (req, res, next) => {
+	const slug = req.params.categorySlug;
 	let products;
 	try {
-		products = await Product.find({catalogSlug: catalogSlug});
+		products = await Product.find({categorySlug: slug}).populate('category');
 	} catch (err) {
 		const error = new HttpError('Could not find a products.', 500);
 		return next(error);
@@ -52,28 +65,26 @@ const createProduct = async (req, res, next) => {
 			'Invalid inputs passed, please check your data.', 422);
 	}
 	const {
-		catalogSlug,
-		productSlug,
+		category,
 		title,
 		price,
-		count,
+		quantity,
 		image,
 		description
 	} = req.body;
 	const createdProduct = new Product({
-		catalogSlug,
-		productSlug,
+		category,
+		productSlug: slugify(title).toLocaleLowerCase(),
 		title,
 		price,
-		count,
+		quantity,
 		image,
 		description
 	});
 	try {
 		await createdProduct.save();
 	} catch (err) {
-		const error = new HttpError(
-			'Creating a product failed, please try again.', 500);
+		const error = new HttpError(err, 500);
 		return next(error);
 	}
 	res.status(201).json({product: createdProduct});
@@ -89,7 +100,7 @@ const updateProduct = async (req, res, next) => {
 	const {
 		title,
 		price,
-		count,
+		quantity,
 		image,
 		description
 	} = req.body;
@@ -102,7 +113,7 @@ const updateProduct = async (req, res, next) => {
 	}
 	product.title = title;
 	product.price = price;
-	product.count = count;
+	product.quantity = quantity;
 	product.image = image;
 	product.description = description;
 	try {
@@ -135,7 +146,7 @@ const deleteProduct = async (req, res, next) => {
 
 exports.getProducts = getProducts;
 exports.getProductByProductSlug = getProductByProductSlug;
-exports.getProductsByCatalogSlug = getProductsByCatalogSlug;
+exports.getProductsByCategorySlug = getProductsByCategorySlug;
 exports.createProduct = createProduct;
 exports.updateProduct = updateProduct;
 exports.deleteProduct = deleteProduct;
