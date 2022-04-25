@@ -23,9 +23,9 @@ app.use((req, res, next) => {
 	next();
 });
 
-app.use('/api/categories', categoriesRoutes);
-app.use('/api/products', productsRoutes);
-app.use('/api/users', usersRoutes);
+app.use('/api/v1/categories', categoriesRoutes);
+app.use('/api/v1/products', productsRoutes);
+app.use('/api/v1/users', usersRoutes);
 
 app.use((req, res, next) => {
 	throw new HttpError('Could not find this route.', 404);

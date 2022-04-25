@@ -3,17 +3,29 @@ const slugify = require('slugify');
 const HttpError = require("../models/http-error");
 const Product = require('../models/product');
 
+const pageItemsCount = 3;
+
 const getProducts = async (req, res, next) => {
 	try {
 		const {page} = req.query;
 		const currentPage = page || 1;
-		const perPage = 3;
 		const products = await Product.find()
-			.skip((currentPage - 1) * perPage)
+			.skip((currentPage - 1) * pageItemsCount)
 			.populate('category')
-			.limit(perPage)
+			.limit(pageItemsCount)
 			.exec();
 		res.json(products);
+	} catch (err) {
+		const error = new HttpError(err, 500);
+		return next(error);
+	}
+};
+
+const getProductsPaging = async (req, res, next) => {
+	try {
+		const totalItemsCount = await Product.find({}).estimatedDocumentCount().exec();
+		const pagesCount = Math.max(Math.ceil(totalItemsCount / pageItemsCount), 1);
+		res.json({totalItemsCount, pageItemsCount, pagesCount});
 	} catch (err) {
 		const error = new HttpError(err, 500);
 		return next(error);
@@ -145,6 +157,7 @@ const deleteProduct = async (req, res, next) => {
 };
 
 exports.getProducts = getProducts;
+exports.getProductsPaging = getProductsPaging;
 exports.getProductByProductSlug = getProductByProductSlug;
 exports.getProductsByCategorySlug = getProductsByCategorySlug;
 exports.createProduct = createProduct;

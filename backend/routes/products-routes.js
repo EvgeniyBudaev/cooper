@@ -7,6 +7,8 @@ const router = express.Router();
 
 router.get('/', productsControllers.getProducts);
 
+router.get('/paging', productsControllers.getProductsPaging);
+
 router.get('/:productSlug', productsControllers.getProductByProductSlug);
 
 router.get(
