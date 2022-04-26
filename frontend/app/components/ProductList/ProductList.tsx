@@ -8,7 +8,7 @@ interface IProductListProps {
 
 export const ProductList: React.FC<IProductListProps> = ({products}) => {
 	return (
-		<ul className="grid gap-5 grid-cols-3">
+		<ul className="grid gap-5 grid-cols-3 mb-14">
 			{products.map(product => <Product key={product._id} product={product}/>)}
 		</ul>
 	);

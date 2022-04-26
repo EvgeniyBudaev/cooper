@@ -6,6 +6,9 @@ module.exports = {
 		extend: {
 			colors: {
 				"primary": "#031412",
+				"secondary": "#B3B9B8",
+				"brown1": "#5E3928",
+				"beige1": "#E4A16F"
 			},
 			fontFamily: {
 				body: ["Mont"],
@@ -19,6 +22,9 @@ module.exports = {
 			transitionDuration: {
 				"default": "0.15s",
 			},
+			width: {
+				"9.5": "38px"
+			}
 		},
 	},
 	plugins: [
@@ -81,6 +87,17 @@ module.exports = {
 							backgroundClip: "text",
 							textFillColor: "transparent",
 						},
+					}
+				},
+				".pagination": {
+					"$this": "&",
+
+					"& > .disabled > a": {
+						"cursor": "default",
+
+						"path": {
+							"fill": "#B3B9B8"
+						}
 					}
 				}
 			})

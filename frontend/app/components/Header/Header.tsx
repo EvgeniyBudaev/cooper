@@ -23,7 +23,7 @@ export const Header: React.FC = () => {
 									 ${isActive
 										? "text-transparent bg-clip-text bg-gradient-to-r from-[#5E3928] to-[#E4A16F]"
 										: undefined}`}
-								to={ROUTES.CATALOG}>
+								to={`${ROUTES.CATALOG}?page=1`}>
 								Каталог
 							</NavLink>
 						</li>

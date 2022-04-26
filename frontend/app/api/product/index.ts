@@ -1,5 +1,5 @@
 import axios from "axios";
-import {IPaging, IProduct} from "~/api/product/types";
+import type {IPaging, IProduct} from "~/api/product/types";
 import {backendBase} from "~/constants/paths";
 
 const config = {
@@ -9,7 +9,7 @@ const config = {
 };
 
 export const getProducts = async (
-	page: number
+	page: number | string
 ): Promise<IProduct[]> => {
 	const response = await axios.get<IProduct[]>(
 		`${backendBase}api/v1/products/?page=${page}`,

@@ -1,54 +1,20 @@
-import React, {useEffect, useState} from "react";
-import {useLocation} from "@remix-run/react";
-import isEmpty from "lodash/isEmpty";
-import {getProducts, getProductsPaging} from "~/api/product";
-import {IPaging, IProduct} from "~/api/product/types";
+import React from "react";
+import {useLocation, useNavigate} from "@remix-run/react";
+import type {IPaging, IProduct} from "~/api/product/types";
 import {ProductList} from "~/components";
 import {Pagination} from "~/ui-kit";
-import {redirect} from "@remix-run/node";
 
-export interface IProductRange {
-	startProduct: number;
-	endProduct: number;
+export interface ICatalogPageProps {
+	products: IProduct[];
+	paging: IPaging;
 }
 
-export const CatalogPage: React.FC = () => {
+export const CatalogPage: React.FC<ICatalogPageProps> = ({products, paging}) => {
 	const location = useLocation();
-	const path = location.pathname;
-	console.log(location);
-	const [products, setProducts] = useState<IProduct[]>([]);
-	const [paging, setPaging] = useState<IPaging>({
-		totalItemsCount: 0,
-		pageItemsCount: 0,
-		pagesCount: 0,
-	});
-	const [productRange, setProductRange] = useState<IProductRange>({
-		startProduct: 0,
-		endProduct: 0,
-	});
-	const [currentPage, setCurrentPage] = useState(1);
-	const pageNumber = 1;
-	// const pageNumber = !isNaN(Number(router.asPath.split("=")[1]))
-	// 	? Number(router.asPath.split("=")[1])
-	// 	: 1;
-
-	useEffect(() => {
-		const fetchProducts = async () => {
-			try {
-				const products = await getProducts(1);
-				const paging = await getProductsPaging();
-				setProducts(products);
-				setPaging(paging);
-			} catch (e) {
-				console.error(e);
-			}
-		};
-		void fetchProducts();
-	}, []);
+	const navigate = useNavigate();
 
 	const handlePageChange = ({selected}: { selected: number }) => {
-		setCurrentPage(selected + 1);
-		redirect(`${path}?page=${selected + 1}`);
+		navigate(`${location.pathname}?page=${selected + 1}`, {replace: true});
 	};
 
 	return (
@@ -82,7 +48,6 @@ export const CatalogPage: React.FC = () => {
 			</div>
 			<ProductList products={products}/>
 			<Pagination
-				initialPage={pageNumber - 1}
 				pagesCount={paging.pagesCount}
 				onChange={handlePageChange}
 			/>
