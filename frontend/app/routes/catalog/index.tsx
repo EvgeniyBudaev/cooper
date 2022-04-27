@@ -32,9 +32,9 @@ interface ICatalogData {
 	paging: IPaging;
 }
 
-function Catalog() {
-	const catalogData = useLoaderData<ICatalogData>();
-	return <CatalogPage products={catalogData.products} paging={catalogData.paging}/>;
+function Index() {
+	const data = useLoaderData<ICatalogData>();
+	return <CatalogPage products={data.products} paging={data.paging}/>;
 }
 
-export default Catalog;
+export default Index;

@@ -12,7 +12,7 @@ export const getProducts = async (
 	page: number | string
 ): Promise<IProduct[]> => {
 	const response = await axios.get<IProduct[]>(
-		`${backendBase}api/v1/products/?page=${page}`,
+		`${backendBase}api/v1/products?page=${page}`,
 		config
 	);
 	return response.data;
@@ -21,6 +21,26 @@ export const getProducts = async (
 export const getProductsPaging = async (): Promise<IPaging> => {
 	const response = await axios.get<IPaging>(
 		`${backendBase}api/v1/products/paging`,
+		config
+	);
+	return response.data;
+};
+
+export const getProductsByCategorySlug = async (
+	page: number | string, categorySlug: string
+): Promise<IProduct[]> => {
+	const response = await axios.get<IProduct[]>(
+		`${backendBase}api/v1/products/category/${categorySlug}?page=${page}`,
+		config
+	);
+	return response.data;
+};
+
+export const getProductsByCategorySlugPaging = async (
+	categorySlug: string
+): Promise<IPaging> => {
+	const response = await axios.get<IPaging>(
+		`${backendBase}api/v1/products/category/${categorySlug}/paging`,
 		config
 	);
 	return response.data;

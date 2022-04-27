@@ -12,7 +12,12 @@ router.get('/paging', productsControllers.getProductsPaging);
 router.get('/:productSlug', productsControllers.getProductByProductSlug);
 
 router.get(
-	'/category/:categorySlug', productsControllers.getProductsByCategorySlug);
+	'/category/:categorySlug',
+	productsControllers.getProductsByCategorySlug);
+
+router.get(
+	'/category/:categorySlug/paging',
+	productsControllers.getProductsByCategorySlugPaging);
 
 router.use(checkAuth);
 

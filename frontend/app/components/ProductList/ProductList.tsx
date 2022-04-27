@@ -1,5 +1,5 @@
 import React from "react";
-import {IProduct} from "~/api/product/types";
+import type {IProduct} from "~/api/product/types";
 import {Product} from "~/components";
 
 interface IProductListProps {
