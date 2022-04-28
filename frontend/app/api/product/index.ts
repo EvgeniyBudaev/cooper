@@ -45,3 +45,13 @@ export const getProductsByCategorySlugPaging = async (
 	);
 	return response.data;
 };
+
+export const getProductByProductSlug = async (
+	productSlug: string
+): Promise<IProduct> => {
+	const response = await axios.get<IProduct>(
+		`${backendBase}api/v1/products/${productSlug}`,
+		config
+	);
+	return response.data;
+};

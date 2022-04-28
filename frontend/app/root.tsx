@@ -15,12 +15,13 @@ import {
 import {useLocation} from "@remix-run/react";
 
 import tailwindStylesheetUrl from "./styles/tailwind.css";
+import fonts from "./styles/fonts.css";
 import {getUser} from "./session.server";
 import {Layout} from "~/components";
 import {ROUTES} from "~/constants/routes";
 
 export const links: LinksFunction = () => {
-	return [{rel: "stylesheet", href: tailwindStylesheetUrl}];
+	return [{rel: "stylesheet", href: tailwindStylesheetUrl}, {rel: "stylesheet", href: fonts}];
 };
 
 export const meta: MetaFunction = () => ({

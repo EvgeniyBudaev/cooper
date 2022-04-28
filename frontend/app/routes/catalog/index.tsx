@@ -1,16 +1,15 @@
 import {Link, useLoaderData} from "@remix-run/react";
 import type {LoaderFunction} from "@remix-run/node";
 import {getProducts, getProductsPaging} from "~/api/product";
-import {ROUTES} from "~/constants/routes";
 import type {IPaging, IProduct} from "~/api/product/types";
+import {ROUTES} from "~/constants/routes";
 import {CatalogPage} from "~/pages";
 
 export const loader: LoaderFunction = async ({request}) => {
 	const url = new URL(request.url);
 	const pageCurrentNumber = url.searchParams.get("page");
-	const products = await getProducts(pageCurrentNumber ?? 1);
-	const paging = await getProductsPaging();
-	return {products, paging};
+	const response = await Promise.all([getProducts(pageCurrentNumber ?? 1), getProductsPaging()]);
+	return {products: response[0], paging: response[1]};
 };
 
 export const handle = {

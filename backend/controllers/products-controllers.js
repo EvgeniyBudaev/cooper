@@ -37,7 +37,7 @@ const getProductByProductSlug = async (req, res, next) => {
 	const productSlug = req.params.productSlug;
 	let product;
 	try {
-		// product = await Product.findById(productSlug); // search by id
+		// product = await ProductListItem.findById(productSlug); // search by id
 		// search by product slug
 		product = await Product.findOne({productSlug: productSlug});
 	} catch (err) {
@@ -66,7 +66,7 @@ const getProductsByCategorySlug = async (req, res, next) => {
 			.limit(pageItemsCount)
 			.exec();
 		// without pagination
-		// products = await Product.find({category}).populate('category');
+		// products = await ProductListItem.find({category}).populate('category');
 	} catch (err) {
 		const error = new HttpError('Could not find a products.', 500);
 		return next(error);

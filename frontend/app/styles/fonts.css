@@ -1,0 +1,34 @@
+@font-face {
+	font-weight: 400;
+	font-family: "Lighthaus", sans-serif;
+	font-style: normal;
+	src: url("/assets/fonts/Lighthaus.otf") format("truetype");
+}
+
+@font-face {
+	font-weight: 400;
+	font-family: "Mont", sans-serif;
+	font-style: normal;
+	src: url("/assets/fonts/Mont-Regular.ttf") format("truetype");
+}
+
+@font-face {
+	font-weight: 500;
+	font-family: "Mont", sans-serif;
+	font-style: normal;
+	src: url("/assets/fonts/Mont-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+	font-weight: 600;
+	font-family: "Mont", sans-serif;
+	font-style: normal;
+	src: url("/assets/fonts/Mont-SemiBold.ttf") format("truetype");
+}
+
+@font-face {
+	font-weight: 700;
+	font-family: "Mont", sans-serif;
+	font-style: normal;
+	src: url("/assets/fonts/Mont-Bold.ttf") format("truetype");
+}

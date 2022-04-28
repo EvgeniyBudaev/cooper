@@ -8,7 +8,9 @@ module.exports = {
 				"primary": "#031412",
 				"secondary": "#B3B9B8",
 				"brown1": "#5E3928",
-				"beige1": "#E4A16F"
+				"beige1": "#E4A16F",
+				"green1": "#4B7159",
+				"red1": "#9B0000"
 			},
 			fontFamily: {
 				body: ["Mont"],
@@ -18,12 +20,25 @@ module.exports = {
 				base: "16px",
 				h1: "100px",
 				h2: "50px",
+				h3: "40px",
+				h4: "35px",
+				"fs-45": "45px"
 			},
 			transitionDuration: {
 				"default": "0.15s",
 			},
+			height: {
+				"12.5": "50px"
+			},
+			maxHeight: {
+				"160": "640px"
+			},
 			width: {
-				"9.5": "38px"
+				"9.5": "38px",
+			},
+			maxWidth: {
+				"12.5": "50px",
+				"52": "208px"
 			}
 		},
 	},
