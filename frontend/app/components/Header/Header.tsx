@@ -34,7 +34,7 @@ export const Header: React.FC = () => {
 									 ${isActive
 										? "text-transparent bg-clip-text bg-gradient-to-r from-[#5E3928] to-[#E4A16F]"
 										: undefined}`}
-								to="/">
+								to={ROUTES.NEWS}>
 								Новости
 							</NavLink>
 						</li>
@@ -45,7 +45,7 @@ export const Header: React.FC = () => {
 									 ${isActive
 										? "text-transparent bg-clip-text bg-gradient-to-r from-[#5E3928] to-[#E4A16F]"
 										: undefined}`}
-								to="/">
+								to={ROUTES.SHIPPING}>
 								Доставка
 							</NavLink>
 						</li>
@@ -56,7 +56,7 @@ export const Header: React.FC = () => {
 									 ${isActive
 										? "text-transparent bg-clip-text bg-gradient-to-r from-[#5E3928] to-[#E4A16F]"
 										: undefined}`}
-								to="/">
+								to={ROUTES.ABOUT}>
 								О нас
 							</NavLink>
 						</li>
@@ -67,7 +67,7 @@ export const Header: React.FC = () => {
 									 ${isActive
 										? "text-transparent bg-clip-text bg-gradient-to-r from-[#5E3928] to-[#E4A16F]"
 										: undefined}`}
-								to="/">
+								to={ROUTES.CONTACTS}>
 								Контакты
 							</NavLink>
 						</li>
