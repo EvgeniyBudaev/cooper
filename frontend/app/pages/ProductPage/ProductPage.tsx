@@ -50,7 +50,7 @@ export const ProductPage: React.FC<IProductPageProps> = ({product}) => {
 				</div>
 			</div>
 			<div className="mb-8 text-h3 font-lighthaus font-normal uppercase">Описание</div>
-			<p className="mb-9 font-light">{description}</p>
+			<p className="font-light">{description}</p>
 		</section>
 	);
 };

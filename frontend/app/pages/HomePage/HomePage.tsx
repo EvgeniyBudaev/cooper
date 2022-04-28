@@ -1,10 +1,16 @@
 import React from "react";
-import {Link} from "@remix-run/react";
-import {Header} from "~/components";
+import {useNavigate} from "@remix-run/react";
+import {Footer, Header} from "~/components";
 import {Container} from "~/components";
 import {Button} from "~/ui-kit";
 
 export const HomePage: React.FC = () => {
+	const navigate = useNavigate();
+
+	const handleRouteTo = () => {
+		navigate(`/catalog/gidrolat/products/distillyator-dlya-polucheniya-gidrolata-8l`, { replace: true });
+	};
+
 	return (
 		<div className="bg-[url('/assets/images/home-bg.png')] h-screen max-h-full bg-no-repeat">
 			<Header/>
@@ -16,8 +22,9 @@ export const HomePage: React.FC = () => {
 					<span className="mr-24 text-3xl text-white">Цена</span>
 					<span className="text-3xl text-white font-extrabold">27 000 руб</span>
 				</div>
-				<Button>Купить</Button>
+				<Button onClick={handleRouteTo}>Купить</Button>
 			</Container>
+			<Footer />
 		</div>
 	);
 };

@@ -1,5 +1,5 @@
 import React from "react";
-import {Container, Header} from "~/components";
+import {Container, Footer, Header} from "~/components";
 import {Breadcrumbs} from "~/ui-kit";
 
 export const Layout: React.FC = ({children}) => {
@@ -10,6 +10,7 @@ export const Layout: React.FC = ({children}) => {
 				<Breadcrumbs />
 				{children}
 			</Container>
+			<Footer />
 		</>
 	);
 };
