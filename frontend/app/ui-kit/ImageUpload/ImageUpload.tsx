@@ -62,6 +62,7 @@ export const ImageUpload = forwardRef(
 			<div className={cn(className)}>
 				<input
 					className="hidden"
+					accept=".jpg,.png,.jpeg"
 					autoComplete={autoComplete}
 					autoFocus={autoFocus}
 					id={id}

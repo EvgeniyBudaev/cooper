@@ -17,7 +17,8 @@ router.post('/signup',
 			.isEmail(),
 		check('password')
 			.isLength({min: 3})
-	], userControllers.signup);
+	],
+	userControllers.signup);
 
 router.post('/login', userControllers.login);
 

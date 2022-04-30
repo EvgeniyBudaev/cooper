@@ -18,6 +18,9 @@ import { getUserId, createUserSession } from "~/session.server";
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { validateEmail } from "~/utils";
 import {ImageUpload} from "~/ui-kit";
+import {signup} from "~/api/user/user";
+import axios from "axios";
+import {backendBase} from "~/constants/paths";
 
 export const loader: LoaderFunction = async ({ request }) => {
   const userId = await getUserId(request);
@@ -46,11 +49,19 @@ export const action: ActionFunction = async ({ request }) => {
     request,
     uploadHandler // <-- we'll look at this deeper next
   );
+  // const formData = await request.formData();
   console.log("FormData: ", formData);
   const name = formData.get("name");
   const email = formData.get("email");
   const password = formData.get("password");
   const image = formData.get("image");
+
+  const response = await axios.post(
+    `${backendBase}api/v1/users/signup`,
+    formData
+  );
+
+  // console.log("IMAGE: ", image);
   // const redirectTo = formData.get("redirectTo");
 
   // if (!validateEmail(email)) {
@@ -82,7 +93,7 @@ export const action: ActionFunction = async ({ request }) => {
   //   );
   // }
 
-  // const user = await createUser(email, password);
+  // const user = await signup(name, email, password, image, formData);
   //
   // return createUserSession({
   //   request,
@@ -108,15 +119,15 @@ export default function Join() {
   const nameRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
-  React.useEffect(() => {
-    if (actionData?.errors?.email) {
-      emailRef.current?.focus();
-    } else if (actionData?.errors?.password) {
-      passwordRef.current?.focus();
-    } else if (actionData?.errors?.name) {
-      nameRef.current?.focus();
-    }
-  }, [actionData]);
+  // React.useEffect(() => {
+  //   if (actionData?.errors?.email) {
+  //     emailRef.current?.focus();
+  //   } else if (actionData?.errors?.password) {
+  //     passwordRef.current?.focus();
+  //   } else if (actionData?.errors?.name) {
+  //     nameRef.current?.focus();
+  //   }
+  // }, [actionData]);
 
   return (
     <div className="flex min-h-full flex-col justify-center">

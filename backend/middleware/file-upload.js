@@ -2,9 +2,9 @@ const multer = require('multer');
 const { v4: uuid } = require('uuid');
 
 const MIME_TYPE_MAP = {
-  'image/png': 'png',
-  'image/jpeg': 'jpg',
-  'image/jpg': 'jpg'
+	'image/png': 'png',
+	'image/jpeg': 'jpeg',
+	'image/jpg': 'jpg'
 };
 
 const fileUpload = multer({
@@ -20,7 +20,7 @@ const fileUpload = multer({
 	}),
 	fileFilter: (req, file, cb) => {
 		const isValid = !!MIME_TYPE_MAP[file.mimetype];
-		let error = isValid ? null : new Error('Invalid mime type');
+		let error = isValid ? null : new Error('Invalid mime type!');
 		cb(error, isValid);
 	}
 });

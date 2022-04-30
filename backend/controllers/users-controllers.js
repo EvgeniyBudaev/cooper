@@ -16,18 +16,23 @@ const getUsers = async (req, res, next) => {
 };
 
 const signup = async (req, res, next) => {
-	const errors = validationResult(req);
+	const errors = validationResult(req.body._fields);
 	if (!errors.isEmpty()) {
+		errors.array().forEach(error => {
+			console.log('error.msg', error);
+		});
 		return next(
 			new HttpError(
-				'Invalid inputs passed, please check your data.', 422
+				`Invalid inputs passed, please check your data.`, 422
 			)
 		);
 	}
 
 	const {name, email, password} = req.body;
-	let existingUser;
+	console.log("req.body", req.body);
+	console.log("name", name);
 
+	let existingUser;
 	try {
 		existingUser = await User.findOne({email: email});
 	} catch (err) {
@@ -54,7 +59,8 @@ const signup = async (req, res, next) => {
 		name,
 		email,
 		password: hashedPassword,
-		image: req.file.path
+		// image: req.file.path
+		image: 'https://static8.depositphotos.com/1207999/1027/i/600/depositphotos_10275820-stock-photo-business-man-suit-avatar.jpg'
 	});
 
 	try {
