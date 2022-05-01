@@ -97,7 +97,7 @@ export const action: ActionFunction = async ({ request }) => {
   //   redirectTo: "/",
   // });
 
-  return await signup(formData);
+  return await signup(name as string, email, password, image as File);
 };
 
 export const meta: MetaFunction = () => {
