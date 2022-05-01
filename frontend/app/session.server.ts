@@ -3,6 +3,7 @@ import invariant from "tiny-invariant";
 
 import type { User } from "~/models/user.server";
 import { getUserById } from "~/models/user.server";
+import type {ISignupResponse} from "~/api/user/types";
 
 invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
@@ -64,17 +65,17 @@ export async function requireUser(request: Request) {
 
 export async function createUserSession({
   request,
-  userId,
+  user,
   remember,
   redirectTo,
 }: {
   request: Request;
-  userId: string;
+  user: ISignupResponse;
   remember: boolean;
   redirectTo: string;
 }) {
   const session = await getSession(request);
-  session.set(USER_SESSION_KEY, userId);
+  session.set(USER_SESSION_KEY, user.userId);
   return redirect(redirectTo, {
     headers: {
       "Set-Cookie": await sessionStorage.commitSession(session, {

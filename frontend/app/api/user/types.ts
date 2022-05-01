@@ -1,6 +1,5 @@
-export interface ISignupPayload {
-	name: string;
+export interface ISignupResponse {
+	userId: string;
 	email: string;
-	password: string;
-	image?: File;
+	token: string;
 }

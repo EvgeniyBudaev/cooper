@@ -17,7 +17,6 @@ export const handle = {
 };
 
 export default function Index() {
-
   return (
     <main className="">
       <HomePage />

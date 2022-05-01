@@ -23,8 +23,9 @@ import axios from "axios";
 import {backendBase} from "~/constants/paths";
 
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
-  if (userId) return redirect("/");
+  console.log("loader request: ", request);
+  // const userId = await getUserId(request);
+  // if (userId) return redirect("/");
   return json({});
 };
 
@@ -38,52 +39,48 @@ interface ActionData {
 }
 
 export const action: ActionFunction = async ({ request }) => {
-  // const uploadHandler = unstable_createFileUploadHandler({
-  //   maxFileSize: 5_000_000,
-  //   file: ({ filename }) => filename,
-  // });
   const uploadHandler = unstable_createMemoryUploadHandler({
     maxFileSize: 500_000,
   });
   const formData = await unstable_parseMultipartFormData(
     request,
-    uploadHandler // <-- we'll look at this deeper next
+    uploadHandler
   );
-  // const formData = await request.formData();
+
   console.log("FormData: ", formData);
   const name = formData.get("name");
   const email = formData.get("email");
   const password = formData.get("password");
   const image = formData.get("image");
 
-  const response = await axios.post(
-    `${backendBase}api/v1/users/signup`,
-    formData
-  );
+  // const response = await axios.post(
+  //   `${backendBase}api/v1/users/signup`,
+  //   formData
+  // );
 
   // console.log("IMAGE: ", image);
   // const redirectTo = formData.get("redirectTo");
 
-  // if (!validateEmail(email)) {
-  //   return json<ActionData>(
-  //     { errors: { email: "Email is invalid" } },
-  //     { status: 400 }
-  //   );
-  // }
+  if (!validateEmail(email)) {
+    return json<ActionData>(
+      { errors: { email: "Email is invalid" } },
+      { status: 400 }
+    );
+  }
 
-  // if (typeof password !== "string") {
-  //   return json<ActionData>(
-  //     { errors: { password: "Password is required" } },
-  //     { status: 400 }
-  //   );
-  // }
+  if (typeof password !== "string") {
+    return json<ActionData>(
+      { errors: { password: "Password is required" } },
+      { status: 400 }
+    );
+  }
 
-  // if (password.length < 6) {
-  //   return json<ActionData>(
-  //     { errors: { password: "Password is too short" } },
-  //     { status: 400 }
-  //   );
-  // }
+  if (password.length < 6) {
+    return json<ActionData>(
+      { errors: { password: "Password is too short" } },
+      { status: 400 }
+    );
+  }
 
   // const existingUser = await getUserByEmail(email);
   // if (existingUser) {
@@ -93,15 +90,14 @@ export const action: ActionFunction = async ({ request }) => {
   //   );
   // }
 
-  // const user = await signup(name, email, password, image, formData);
-  //
   // return createUserSession({
   //   request,
-  //   userId: user.id,
+  //   user,
   //   remember: false,
-  //   redirectTo: typeof redirectTo === "string" ? redirectTo : "/",
+  //   redirectTo: "/",
   // });
-  return null;
+
+  return await signup(formData);
 };
 
 export const meta: MetaFunction = () => {
@@ -114,20 +110,21 @@ export default function Join() {
   const [searchParams] = useSearchParams();
   const redirectTo = searchParams.get("redirectTo") ?? undefined;
   const actionData = useActionData() as ActionData;
+  console.log("actionData: ", actionData);
   const emailRef = React.useRef<HTMLInputElement>(null);
   const imageRef = React.useRef<HTMLInputElement>(null);
   const nameRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
-  // React.useEffect(() => {
-  //   if (actionData?.errors?.email) {
-  //     emailRef.current?.focus();
-  //   } else if (actionData?.errors?.password) {
-  //     passwordRef.current?.focus();
-  //   } else if (actionData?.errors?.name) {
-  //     nameRef.current?.focus();
-  //   }
-  // }, [actionData]);
+  React.useEffect(() => {
+    if (actionData?.errors?.email) {
+      emailRef.current?.focus();
+    } else if (actionData?.errors?.password) {
+      passwordRef.current?.focus();
+    } else if (actionData?.errors?.name) {
+      nameRef.current?.focus();
+    }
+  }, [actionData]);
 
   return (
     <div className="flex min-h-full flex-col justify-center">
@@ -236,11 +233,11 @@ export default function Join() {
                 // aria-describedby="image-error"
                 // className="w-full rounded border border-gray-500 px-2 py-1 text-lg"
               />
-              {/*{actionData?.errors?.image && (*/}
-              {/*  <div className="pt-1 text-red-700" id="image-error">*/}
-              {/*    {actionData.errors.image}*/}
-              {/*  </div>*/}
-              {/*)}*/}
+              {actionData?.errors?.image && (
+                <div className="pt-1 text-red-700" id="image-error">
+                  {actionData.errors.image}
+                </div>
+              )}
             </div>
           </div>
 

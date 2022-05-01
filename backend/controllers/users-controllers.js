@@ -16,7 +16,12 @@ const getUsers = async (req, res, next) => {
 };
 
 const signup = async (req, res, next) => {
-	const errors = validationResult(req.body._fields);
+	const name = req.body._fields.name[0];
+	const email = req.body._fields.email[0];
+	const password = req.body._fields.password[0];
+	const image = req.body._fields.image;
+	// const errors = validationResult(req);
+	const errors = validationResult({image, name, email, password});
 	if (!errors.isEmpty()) {
 		errors.array().forEach(error => {
 			console.log('error.msg', error);
@@ -28,9 +33,8 @@ const signup = async (req, res, next) => {
 		);
 	}
 
-	const {name, email, password} = req.body;
 	console.log("req.body", req.body);
-	console.log("name", name);
+	// const {name, email, password} = req.body;
 
 	let existingUser;
 	try {
