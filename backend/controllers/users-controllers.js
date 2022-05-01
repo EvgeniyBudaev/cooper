@@ -16,12 +16,8 @@ const getUsers = async (req, res, next) => {
 };
 
 const signup = async (req, res, next) => {
-	const name = req.body._fields.name[0];
-	const email = req.body._fields.email[0];
-	const password = req.body._fields.password[0];
-	const image = req.body._fields.image;
-	// const errors = validationResult(req);
-	const errors = validationResult({image, name, email, password});
+	const errors = validationResult(req);
+
 	if (!errors.isEmpty()) {
 		errors.array().forEach(error => {
 			console.log('error.msg', error);
@@ -33,8 +29,7 @@ const signup = async (req, res, next) => {
 		);
 	}
 
-	console.log("req.body", req.body);
-	// const {name, email, password} = req.body;
+	const {name, email, password} = req.body;
 
 	let existingUser;
 	try {

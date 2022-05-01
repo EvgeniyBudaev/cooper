@@ -5,7 +5,7 @@ import {backendBase} from "~/constants/paths";
 export const signup = async (formData: FormData): Promise<ISignupResponse> => {
 	const response = await axios.post<ISignupResponse>(
 		`${backendBase}api/v1/users/signup`,
-		formData
+		Object.fromEntries(formData.entries()),
 	);
 	return response.data;
 };
