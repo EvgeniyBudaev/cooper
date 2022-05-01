@@ -1,7 +1,6 @@
 import type {ForwardedRef} from "react";
 import React, { forwardRef, useEffect, useRef, useState} from "react";
 import cn from "classnames";
-import {Button} from "~/ui-kit";
 
 export interface IImageUploadProps {
 	className?: string;
@@ -79,7 +78,7 @@ export const ImageUpload = forwardRef(
 						{previewUrl && <img className="h-full w-full object-cover" src={previewUrl as string} alt="Preview"/>}
 						{!previewUrl && "Пожалуйста, выберите изображение."}
 					</div>
-					<Button onClick={handlePickImage}>Выбрать изображение</Button>
+					<div className="btn-primary" onClick={handlePickImage}>Выбрать изображение</div>
 				</div>
 				{!isValid && <p>{errorText}</p>}
 			</div>

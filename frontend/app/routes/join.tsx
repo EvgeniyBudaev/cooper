@@ -61,6 +61,13 @@ export const action: ActionFunction = async ({ request }) => {
   // console.log("IMAGE: ", image);
   // const redirectTo = formData.get("redirectTo");
 
+  if (typeof name !== "string") {
+    return json<ActionData>(
+      { errors: { password: "Name is required" } },
+      { status: 400 }
+    );
+  }
+
   if (!validateEmail(email)) {
     return json<ActionData>(
       { errors: { email: "Email is invalid" } },
@@ -97,7 +104,7 @@ export const action: ActionFunction = async ({ request }) => {
   //   redirectTo: "/",
   // });
 
-  return await signup(name as string, email, password, image as File);
+  return await signup(name, email, password, image as File);
 };
 
 export const meta: MetaFunction = () => {

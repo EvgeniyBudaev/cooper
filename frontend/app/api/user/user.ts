@@ -1,7 +1,7 @@
 import axios from "axios";
 import type {ISignupResponse} from "~/api/user/types";
 import {backendBase} from "~/constants/paths";
-import { default as NodeFormData } from "form-data";
+import {default as NodeFormData} from "form-data";
 
 export const signup = async (name: string, email: string, password: string, image: File): Promise<ISignupResponse> => {
 	const nodeFormData = new NodeFormData();
@@ -19,7 +19,6 @@ export const signup = async (name: string, email: string, password: string, imag
 		{
 			headers: nodeFormData.getHeaders(),
 		}
-	)
-
+	);
 	return response.data;
 };

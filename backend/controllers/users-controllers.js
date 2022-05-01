@@ -58,8 +58,8 @@ const signup = async (req, res, next) => {
 		name,
 		email,
 		password: hashedPassword,
-		// image: req.file.path
-		image: 'https://static8.depositphotos.com/1207999/1027/i/600/depositphotos_10275820-stock-photo-business-man-suit-avatar.jpg'
+		image: req.file.path
+		//image: 'https://static8.depositphotos.com/1207999/1027/i/600/depositphotos_10275820-stock-photo-business-man-suit-avatar.jpg'
 	});
 
 	try {
