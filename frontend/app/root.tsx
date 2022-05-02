@@ -10,7 +10,7 @@ import {
 	Meta,
 	Outlet,
 	Scripts,
-	ScrollRestoration,
+	ScrollRestoration, useTransition,
 } from "@remix-run/react";
 import {useLocation} from "@remix-run/react";
 
@@ -19,6 +19,7 @@ import fonts from "./styles/fonts.css";
 import {getUser} from "./session.server";
 import {Layout} from "~/components";
 import {ROUTES} from "~/constants/routes";
+import {Progress} from "~/ui-kit";
 
 export const links: LinksFunction = () => {
 	return [{rel: "stylesheet", href: tailwindStylesheetUrl}, {rel: "stylesheet", href: fonts}];
@@ -42,6 +43,7 @@ export const loader: LoaderFunction = async ({request}) => {
 
 export default function App() {
 	const location = useLocation();
+	const transition = useTransition();
 
 	return (
 		<html lang="ru" className="h-full">
@@ -50,6 +52,7 @@ export default function App() {
 			<Links/>
 		</head>
 		<body className="h-full">
+		{transition.state === "loading" && <Progress />}
 		{location.pathname === ROUTES.HOME ? <Outlet/> : (
 			<Layout>
 				<Outlet/>

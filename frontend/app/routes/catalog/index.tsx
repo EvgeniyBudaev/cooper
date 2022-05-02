@@ -33,7 +33,12 @@ interface ICatalogData {
 
 function Index() {
 	const data = useLoaderData<ICatalogData>();
-	return <CatalogPage products={data.products} paging={data.paging}/>;
+
+	return (
+		<>
+			<CatalogPage products={data.products} paging={data.paging}/>
+		</>
+	);
 }
 
 export default Index;

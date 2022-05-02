@@ -1,5 +1,5 @@
 import type {ForwardedRef} from "react";
-import React, { forwardRef, useEffect, useRef, useState} from "react";
+import React, {forwardRef, useEffect, useRef, useState} from "react";
 import cn from "classnames";
 
 export interface IImageUploadProps {
@@ -17,7 +17,7 @@ export interface IImageUploadProps {
 
 export const ImageUpload = forwardRef(
 	(
-		{ className, autoComplete, autoFocus, errorText, id, name, required, type, isCenter, onInput }: IImageUploadProps,
+		{className, autoComplete, autoFocus, errorText, id, name, required, type, isCenter, onInput}: IImageUploadProps,
 		ref: ForwardedRef<HTMLInputElement>
 	): JSX.Element => {
 		const filePickerRef = useRef<HTMLInputElement>(null);
@@ -71,7 +71,7 @@ export const ImageUpload = forwardRef(
 					type={type}
 					onChange={handlePicked}
 				/>
-				<div className={cn(isCenter ? "flex justify-center items-center flex-col": "")}>
+				<div className={cn(isCenter ? "flex justify-center items-center flex-col" : "")}>
 					<div
 						className="flex justify-center items-center text-center mb-4 h-52 w-52 border border-solid border-[#CCCCCC]"
 					>
