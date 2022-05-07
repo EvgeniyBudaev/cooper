@@ -19,7 +19,7 @@ router.get(
 	'/category/:categorySlug/paging',
 	productsControllers.getProductsByCategorySlugPaging);
 
-router.use(checkAuth);
+// router.use(checkAuth);
 
 router.post(
 	'/create',

@@ -10,11 +10,20 @@ const getProducts = async (req, res, next) => {
 	try {
 		const {page} = req.query;
 		const currentPage = page || 1;
-		const products = await Product.find()
-			.skip((currentPage - 1) * pageItemsCount)
-			.populate('category')
-			.limit(pageItemsCount)
-			.exec();
+		let products;
+		if (req.query.title) {
+			products = await Product.find({ $text: { $search: req.query.title }, $options: 'i' })
+				.skip((currentPage - 1) * pageItemsCount)
+				.populate('category')
+				.limit(pageItemsCount)
+				.exec();
+		} else {
+			products = await Product.find()
+				.skip((currentPage - 1) * pageItemsCount)
+				.populate('category')
+				.limit(pageItemsCount)
+				.exec();
+		}
 		res.json(products);
 	} catch (err) {
 		const error = new HttpError(err, 500);
