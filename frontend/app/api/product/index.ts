@@ -9,10 +9,11 @@ const config = {
 };
 
 export const getProducts = async (
-	page: number | string
+	page: number | string,
+  title?: string | null
 ): Promise<IProduct[]> => {
 	const response = await axios.get<IProduct[]>(
-		`${backendBase}api/v1/products?page=${page}`,
+		`${backendBase}api/v1/products?page=${page}${title ? `&title=${encodeURIComponent(title)}` : ""}`,
 		config
 	);
 	return response.data;

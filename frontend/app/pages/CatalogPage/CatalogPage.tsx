@@ -1,7 +1,7 @@
 import React from "react";
 import {Link, useLocation, useNavigate} from "@remix-run/react";
 import type {IPaging, IProduct} from "~/api/product/types";
-import {ProductList} from "~/components";
+import {ProductList, Search} from "~/components";
 import {ROUTES} from "~/constants/routes";
 import {Pagination} from "~/ui-kit";
 
@@ -47,11 +47,12 @@ export const CatalogPage: React.FC<ICatalogPageProps> = ({products, paging}) => 
 					</div>
 				</Link>
 			</div>
+			<Search />
 			<ProductList products={products}/>
-			<Pagination
-				pagesCount={paging.pagesCount}
-				onChange={handlePageChange}
-			/>
+			{/*<Pagination*/}
+			{/*	pagesCount={paging.pagesCount}*/}
+			{/*	onChange={handlePageChange}*/}
+			{/*/>*/}
 		</>
 	);
 };

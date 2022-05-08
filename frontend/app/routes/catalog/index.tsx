@@ -8,7 +8,8 @@ import {CatalogPage} from "~/pages";
 export const loader: LoaderFunction = async ({request}) => {
 	const url = new URL(request.url);
 	const pageCurrentNumber = url.searchParams.get("page");
-	const response = await Promise.all([getProducts(pageCurrentNumber ?? 1), getProductsPaging()]);
+	const titleSearch = url.searchParams.get("title");
+	const response = await Promise.all([getProducts(pageCurrentNumber ?? 1, titleSearch ?? ""), getProductsPaging()]);
 	return {products: response[0], paging: response[1]};
 };
 
