@@ -6,14 +6,25 @@ import type {
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import * as React from "react";
-
+import { Form as RemixForm, FormProps } from "remix-forms";
+import { z } from "zod";
 import { createUserSession, getUserId } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
 import { validateEmail } from "~/utils";
+import {login} from "~/api/user/user";
+import type { UnpackData } from "remix-domains";
+import { pipe } from "remix-domains";
+import {getUser} from "~/domain/user";
 
+const getData = pipe(getUser);
+
+type LoaderData = UnpackData<typeof getData>;
 export const loader: LoaderFunction = async ({ request }) => {
-  const userId = await getUserId(request);
-  if (userId) return redirect("/");
+  console.log("loader request: ", request);
+  // const userId = await getUserId(request);
+  // if (userId) return redirect("/");
+  const result = await getData(request);
+  console.log("result: ", result);
   return json({});
 };
 
@@ -52,21 +63,23 @@ export const action: ActionFunction = async ({ request }) => {
     );
   }
 
-  const user = await verifyLogin(email, password);
+  // const user = await verifyLogin(email, password);
 
-  if (!user) {
-    return json<ActionData>(
-      { errors: { email: "Invalid email or password" } },
-      { status: 400 }
-    );
-  }
+  // if (!user) {
+  //   return json<ActionData>(
+  //     { errors: { email: "Invalid email or password" } },
+  //     { status: 400 }
+  //   );
+  // }
 
-  return createUserSession({
-    request,
-    userId: user.id,
-    remember: remember === "on" ? true : false,
-    redirectTo: typeof redirectTo === "string" ? redirectTo : "/notes",
-  });
+  // return createUserSession({
+  //   request,
+  //   userId: user.id,
+  //   remember: remember === "on" ? true : false,
+  //   redirectTo: typeof redirectTo === "string" ? redirectTo : "/notes",
+  // });
+
+  return await login(email, password);
 };
 
 export const meta: MetaFunction = () => {
@@ -77,8 +90,9 @@ export const meta: MetaFunction = () => {
 
 export default function LoginPage() {
   const [searchParams] = useSearchParams();
-  const redirectTo = searchParams.get("redirectTo") || "/notes";
+  const redirectTo = searchParams.get("redirectTo") || "/";
   const actionData = useActionData() as ActionData;
+  console.log("actionData: ", actionData);
   const emailRef = React.useRef<HTMLInputElement>(null);
   const passwordRef = React.useRef<HTMLInputElement>(null);
 
@@ -167,11 +181,11 @@ export default function LoginPage() {
                 htmlFor="remember"
                 className="ml-2 block text-sm text-gray-900"
               >
-                Remember me
+                Запомнить меня
               </label>
             </div>
             <div className="text-center text-sm text-gray-500">
-              Don't have an account?{" "}
+              Нет аккаунта?{" "}
               <Link
                 className="text-blue-500 underline"
                 to={{
@@ -179,7 +193,7 @@ export default function LoginPage() {
                   search: searchParams.toString(),
                 }}
               >
-                Sign up
+               Войти
               </Link>
             </div>
           </div>
