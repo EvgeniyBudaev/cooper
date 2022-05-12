@@ -1,4 +1,4 @@
-import {Link, useLoaderData} from "@remix-run/react";
+import {Link, useCatch, useLoaderData} from "@remix-run/react";
 import type {LoaderFunction} from "@remix-run/node";
 import {getProductByProductSlug} from "~/api/product";
 import type {IProduct} from "~/api/product/types";
@@ -7,6 +7,8 @@ import {ROUTES} from "~/constants/routes";
 import {ProductPage} from "~/pages";
 import type {IBreadcrumbByProductSlug} from "~/types/breadcrumb";
 import type {TCatalogSlug} from "~/types/path";
+import {ErrorComponent} from "~/components";
+import * as React from "react";
 
 export const loader: LoaderFunction = async ({request, params}) => {
 	if (params.productSlug) {
@@ -49,6 +51,19 @@ interface IProductData {
 function Index() {
 	const data = useLoaderData<IProductData>();
 	return <ProductPage product={data.product}/>;
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+	return <ErrorComponent message={error.message} />;
+}
+
+export function CatchBoundary() {
+	const caught = useCatch();
+
+	if (caught.status === 404) {
+		return <ErrorComponent message="Продукт не найден" />;
+	}
+	throw new Error(`Unexpected caught response with status: ${caught.status}`);
 }
 
 export default Index;

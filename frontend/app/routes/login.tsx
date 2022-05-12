@@ -6,15 +6,26 @@ import type {
 import { json, redirect } from "@remix-run/node";
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import * as React from "react";
-import { Form as RemixForm, FormProps } from "remix-forms";
+import {Form as RemixForm, formAction, FormProps} from "remix-forms";
 import { z } from "zod";
 import { createUserSession, getUserId } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
 import { validateEmail } from "~/utils";
 import {login} from "~/api/user/user";
 import type { UnpackData } from "remix-domains";
-import { pipe } from "remix-domains";
+import {inputFromForm, makeDomainFunction, pipe} from "remix-domains";
 import {getUser} from "~/domain/user";
+import {ErrorComponent} from "~/components";
+
+export const schema = z.object({
+  email: z.string().nonempty().email(),
+  password: z.string().nonempty(),
+});
+type User = z.infer<typeof schema>;
+
+export const mutation = makeDomainFunction(schema)(async ({email, password}) =>
+  await login(email, password),
+);
 
 const getData = pipe(getUser);
 
@@ -23,8 +34,6 @@ export const loader: LoaderFunction = async ({ request }) => {
   console.log("loader request: ", request);
   // const userId = await getUserId(request);
   // if (userId) return redirect("/");
-  const result = await getData(request);
-  console.log("result: ", result);
   return json({});
 };
 
@@ -39,29 +48,35 @@ export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
-  const redirectTo = formData.get("redirectTo");
-  const remember = formData.get("remember");
+  // const redirectTo = formData.get("redirectTo");
+  // const remember = formData.get("remember");
+  const input = await inputFromForm(request);
+  const result = await mutation({email, password});
+  console.log("Action result: ", result);
 
-  if (!validateEmail(email)) {
-    return json<ActionData>(
-      { errors: { email: "Email is invalid" } },
-      { status: 400 }
-    );
-  }
+  if (!result.success) return result;
+  return {};
 
-  if (typeof password !== "string") {
-    return json<ActionData>(
-      { errors: { password: "Password is required" } },
-      { status: 400 }
-    );
-  }
+  // if (!validateEmail(email)) {
+  //   return json<ActionData>(
+  //     { errors: { email: "Email is invalid" } },
+  //     { status: 400 }
+  //   );
+  // }
 
-  if (password.length < 8) {
-    return json<ActionData>(
-      { errors: { password: "Password is too short" } },
-      { status: 400 }
-    );
-  }
+  // if (typeof password !== "string") {
+  //   return json<ActionData>(
+  //     { errors: { password: "Password is required" } },
+  //     { status: 400 }
+  //   );
+  // }
+
+  // if (password.length < 8) {
+  //   return json<ActionData>(
+  //     { errors: { password: "Password is too short" } },
+  //     { status: 400 }
+  //   );
+  // }
 
   // const user = await verifyLogin(email, password);
 
@@ -79,7 +94,7 @@ export const action: ActionFunction = async ({ request }) => {
   //   redirectTo: typeof redirectTo === "string" ? redirectTo : "/notes",
   // });
 
-  return await login(email, password);
+  // return await login(email, password);
 };
 
 export const meta: MetaFunction = () => {
@@ -201,4 +216,8 @@ export default function LoginPage() {
       </div>
     </div>
   );
+}
+
+export function ErrorBoundary({ error }: { error: Error }) {
+  return <ErrorComponent message={error.message} />;
 }
