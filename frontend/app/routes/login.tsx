@@ -48,8 +48,6 @@ export const action: ActionFunction = async ({ request }) => {
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
-  // const redirectTo = formData.get("redirectTo");
-  // const remember = formData.get("remember");
   const input = await inputFromForm(request);
   const result = await mutation({email, password});
   console.log("Action result: ", result);
