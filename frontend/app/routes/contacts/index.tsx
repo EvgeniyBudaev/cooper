@@ -1,6 +1,6 @@
 import type {LoaderFunction} from "@remix-run/node";
 import {useLoaderData} from "@remix-run/react";
-import * as React from 'react';
+import * as React from "react";
 
 export const loader: LoaderFunction = async () => {
 	console.log("START");
