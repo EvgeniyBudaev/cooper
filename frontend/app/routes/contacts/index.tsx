@@ -1,14 +1,11 @@
-import type {LoaderFunction} from "@remix-run/node";
-import {useLoaderData} from "@remix-run/react";
 import * as React from "react";
+import type {LoaderFunction} from "@remix-run/node";
 import * as server from "~/mocks";
+import {useLoaderData} from "@remix-run/react";
 
 export const loader: LoaderFunction = async () => {
 	server.init();
-	console.log("START");
-	const res =  await fetch('http://localhost:3000/contacts').then((res) => res.json());
-	console.log("RESULT: ", res);
-	return res;
+	return await fetch("http://localhost:3000/contacts").then(res => res.json());
 }
 
 function Index() {
@@ -17,8 +14,9 @@ function Index() {
 
 	return (
 		<section>
-			<h1>Контакты</h1>
-			<p>Страница в разработке.</p>
+			<h1>Contacts</h1>
+			<h2>First name: {data.firstName}</h2>
+			<h2>Last name: {data.lastName}</h2>
 		</section>
 	);
 }
