@@ -1,10 +1,8 @@
 import * as React from "react";
 import type {LoaderFunction} from "@remix-run/node";
-import * as server from "~/mocks";
 import {useLoaderData} from "@remix-run/react";
 
 export const loader: LoaderFunction = async () => {
-	server.init();
 	return await fetch("http://localhost:3000/contacts").then(res => res.json());
 }
 

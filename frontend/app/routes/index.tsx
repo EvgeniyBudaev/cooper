@@ -1,6 +1,7 @@
 import {HomePage} from "~/pages";
 import {Link} from "@remix-run/react";
 import {ROUTES} from "~/constants/routes";
+import * as server from "~/mocks";
 
 export const handle = {
   breadcrumb: () => <Link
@@ -17,6 +18,8 @@ export const handle = {
 };
 
 export default function Index() {
+  server.init();
+
   return (
     <main className="">
       <HomePage />
