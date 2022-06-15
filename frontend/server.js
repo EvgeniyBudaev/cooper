@@ -13,8 +13,9 @@ app.use(compression());
 
 app.use(helmet.contentSecurityPolicy({
   directives: {
+    defaultSrc: ["'self'"],
     scriptSrc: ["'self'", "'unsafe-inline'"],
-    defaultSrc: ["'self'"]
+    connectSrc: ["'self'", "ws:"],
   },
 }));
 app.use(helmet.crossOriginEmbedderPolicy());
