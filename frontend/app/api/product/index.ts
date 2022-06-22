@@ -1,6 +1,7 @@
 import axios from "axios";
 import type {IPaging, IProduct} from "~/api/product/types";
 import {backendBase} from "~/constants/paths";
+import { rethrowAxiosError } from "../../helpers/error";
 
 const config = {
 	headers: {
@@ -15,7 +16,8 @@ export const getProducts = async (
 	const response = await axios.get<IProduct[]>(
 		`${backendBase}api/v1/products?page=${page}${title ? `&title=${encodeURIComponent(title)}` : ""}`,
 		config
-	);
+	).catch(rethrowAxiosError);
+
 	return response.data;
 };
 
@@ -23,7 +25,8 @@ export const getProductsPaging = async (): Promise<IPaging> => {
 	const response = await axios.get<IPaging>(
 		`${backendBase}api/v1/products/paging`,
 		config
-	);
+	).catch(rethrowAxiosError);
+
 	return response.data;
 };
 
@@ -33,7 +36,8 @@ export const getProductsByCategorySlug = async (
 	const response = await axios.get<IProduct[]>(
 		`${backendBase}api/v1/products/category/${categorySlug}?page=${page}`,
 		config
-	);
+	).catch(rethrowAxiosError);
+
 	return response.data;
 };
 
@@ -43,7 +47,8 @@ export const getProductsByCategorySlugPaging = async (
 	const response = await axios.get<IPaging>(
 		`${backendBase}api/v1/products/category/${categorySlug}/paging`,
 		config
-	);
+	).catch(rethrowAxiosError);
+
 	return response.data;
 };
 
@@ -53,6 +58,7 @@ export const getProductByProductSlug = async (
 	const response = await axios.get<IProduct>(
 		`${backendBase}api/v1/products/${productSlug}`,
 		config
-	);
+	).catch(rethrowAxiosError);
+
 	return response.data;
 };

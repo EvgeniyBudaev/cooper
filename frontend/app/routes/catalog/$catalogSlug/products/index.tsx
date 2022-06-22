@@ -12,11 +12,13 @@ import * as React from "react";
 import { createBoundaries, errorMessageBoundary } from "~/helpers/error";
 
 export const loader: LoaderFunction = async ({request, params}) => {
-	if (params.productSlug) {
-		return await getProductByProductSlug(params.productSlug);
-	} else {
-		return {};
-	}
+    if (!params.productSlug) {
+        throw new Response("Not Found*", {
+          status: 404,
+        });
+      }
+
+	return await getProductByProductSlug(params.productSlug);
 }
 
 export const getTitleByCatalogSlug = (slug: TCatalogSlug): string => {
@@ -54,12 +56,25 @@ function Index() {
 	return <ProductPage product={data.product}/>;
 }
 
+// export function ErrorBoundary({ error }: { error: Error }) {
+// 	return <ErrorComponent message={error.message} />;
+// }
+
+// export function CatchBoundary() {
+// 	const caught = useCatch();
+
+// 	if (caught.status === 404) {
+// 		return <ErrorComponent message="Продукт не найден" />;
+// 	}
+// 	throw new Error(`Unexpected caught response with status: ${caught.status}`);
+// }
+
 export const { ErrorBoundary, CatchBoundary } = createBoundaries({
 	statusMap: new Map([
 	  [404, errorMessageBoundary('Продукт не найден 404')],
 	  [500, errorMessageBoundary('Ошибка на сервере 500')],
 	  [501, errorMessageBoundary('Ошибка на сервере 501')],
 	]),
-});
+  });
 
 export default Index;

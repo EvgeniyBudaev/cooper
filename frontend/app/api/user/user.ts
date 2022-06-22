@@ -2,6 +2,7 @@ import axios from "axios";
 import type {ILoginResponse, ISignupResponse} from "~/api/user/types";
 import {backendBase} from "~/constants/paths";
 import {default as NodeFormData} from "form-data";
+import { rethrowAxiosError } from "../../helpers/error";
 
 export const login = async (email: string, password: string) => {
 	const config = {
@@ -15,7 +16,8 @@ export const login = async (email: string, password: string) => {
 	});
 	const response = await axios.post<ILoginResponse>(
 		`${backendBase}api/v1/users/login`, body, config
-	);
+	).catch(rethrowAxiosError);
+	
 	return response.data;
 };
 
@@ -35,6 +37,7 @@ export const signup = async (name: string, email: string, password: string, imag
 		{
 			headers: nodeFormData.getHeaders(),
 		}
-	);
+	).catch(rethrowAxiosError);
+	
 	return response.data;
 };

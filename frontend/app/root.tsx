@@ -17,7 +17,7 @@ import {useLocation} from "@remix-run/react";
 import tailwindStylesheetUrl from "./styles/tailwind.css";
 import fonts from "./styles/fonts.css";
 import {getUser} from "./session.server";
-import {ErrorComponent, Layout} from "~/components";
+import {CatchComponent, ErrorComponent, Layout} from "~/components";
 import {ROUTES} from "~/constants/routes";
 import {Progress} from "~/ui-kit";
 import * as React from "react";
@@ -92,13 +92,13 @@ export function ErrorBoundary({ error }: { error: Error }) {
 export function CatchBoundary() {
 	const caught = useCatch();
 
-	let message;
+	let message = "";
 	switch (caught.status) {
 		case 401:
-			message = <div>Нет прав к этой странице..</div>;
+			message = "Нет прав к этой странице...";
 			break;
 		case 404:
-			message = <div>Страница не сущестует.</div>;
+			message = "Страница не существует (Catch).";
 			break;
 
 		default:
@@ -107,7 +107,7 @@ export function CatchBoundary() {
 
 	return (
 		<Document>
-			<ErrorComponent message={`${caught.status} ${caught.statusText} ${message}`} />
+			<CatchComponent message={`${caught.status} ${caught.statusText} ${message}`} />
 		</Document>
 	);
 }
