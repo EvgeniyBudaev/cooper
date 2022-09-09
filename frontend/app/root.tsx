@@ -10,7 +10,7 @@ import {
 	Meta,
 	Outlet,
 	Scripts,
-	ScrollRestoration, useCatch, useTransition,
+	ScrollRestoration, useCatch, useLoaderData, useTransition,
 } from "@remix-run/react";
 import {useLocation} from "@remix-run/react";
 
@@ -21,6 +21,7 @@ import {ErrorComponent, Layout} from "~/components";
 import {ROUTES} from "~/constants/routes";
 import {Progress} from "~/ui-kit";
 import * as React from "react";
+import { cryptoRandomStringAsync } from "crypto-random-string";
 
 export const links: LinksFunction = () => {
 	return [{rel: "stylesheet", href: tailwindStylesheetUrl}, {rel: "stylesheet", href: fonts}];
@@ -34,16 +35,21 @@ export const meta: MetaFunction = () => ({
 
 type LoaderData = {
 	user: Awaited<ReturnType<typeof getUser>>;
+	cspScriptNonce: string;
 };
 
 export const loader: LoaderFunction = async ({request}) => {
+	const cspScriptNonce = await cryptoRandomStringAsync({ length: 41 });
+
 	return json<LoaderData>({
 		user: await getUser(request),
+		cspScriptNonce,
 	});
 };
 
 function Document({ children }: { children: React.ReactNode }) {
 	const transition = useTransition();
+	const { cspScriptNonce } = useLoaderData<LoaderData>();
 
 	return (
 		<html lang="ru" className="h-full bg-gray-100">
@@ -59,9 +65,9 @@ function Document({ children }: { children: React.ReactNode }) {
 		<body className="min-h-full ">
 		{transition.state === "loading" && <Progress />}
 		{children}
-		<ScrollRestoration />
-		<Scripts />
-		{process.env.NODE_ENV === 'development' ? <LiveReload /> : null}
+		<ScrollRestoration nonce={cspScriptNonce} />
+		<Scripts nonce={cspScriptNonce} />
+		{process.env.NODE_ENV === 'development' ? <LiveReload nonce={cspScriptNonce} /> : null}
 		</body>
 		</html>
 	);

@@ -11,13 +11,6 @@ const app = express();
 
 app.use(compression());
 
-app.use(helmet.contentSecurityPolicy({
-  directives: {
-    defaultSrc: ["'self'"],
-    scriptSrc: ["'self'", "'unsafe-inline'"],
-    connectSrc: ["'self'", "ws:"],
-  },
-}));
 app.use(helmet.crossOriginEmbedderPolicy());
 app.use(helmet.crossOriginOpenerPolicy());
 app.use(helmet.crossOriginResourcePolicy());
