@@ -49,7 +49,11 @@ export const loader: LoaderFunction = async ({request}) => {
 
 function Document({ children }: { children: React.ReactNode }) {
 	const transition = useTransition();
-	const { cspScriptNonce } = useLoaderData<LoaderData>();
+	let { cspScriptNonce } = useLoaderData<LoaderData>();
+
+	if(typeof window !== "undefined") {
+		cspScriptNonce = "";
+	}
 
 	return (
 		<html lang="ru" className="h-full bg-gray-100">
