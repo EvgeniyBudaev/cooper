@@ -1,8 +1,5 @@
-import type {
-	LinksFunction,
-	LoaderFunction,
-	MetaFunction,
-} from "@remix-run/node";
+import * as React from "react";
+import type { LinksFunction, LoaderArgs, MetaFunction } from '@remix-run/node';
 import {json} from "@remix-run/node";
 import {
 	Links,
@@ -13,18 +10,19 @@ import {
 	ScrollRestoration, useCatch, useLoaderData, useTransition,
 } from "@remix-run/react";
 import {useLocation} from "@remix-run/react";
+import { cryptoRandomStringAsync } from "crypto-random-string";
 
-import tailwindStylesheetUrl from "./styles/tailwind.css";
-import fonts from "./styles/fonts.css";
 import {getUser} from "./session.server";
 import {ErrorComponent, Layout} from "~/components";
 import {ROUTES} from "~/constants/routes";
 import {Progress} from "~/ui-kit";
-import * as React from "react";
-import { cryptoRandomStringAsync } from "crypto-random-string";
+import { Environment } from "./enviroment.server";
+import type { EnvironmentType } from "./enviroment.server"
+import fonts from "./styles/fonts.css";
+import styles from "./styles/app.css";
 
 export const links: LinksFunction = () => {
-	return [{rel: "stylesheet", href: tailwindStylesheetUrl}, {rel: "stylesheet", href: fonts}];
+	return [{rel: "stylesheet", href: styles}, {rel: "stylesheet", href: fonts}];
 };
 
 export const meta: MetaFunction = () => ({
@@ -33,23 +31,40 @@ export const meta: MetaFunction = () => ({
 	viewport: "width=device-width,initial-scale=1",
 });
 
+interface IWindowGlobals {
+	sentryDsn?: string;
+  }
+
 type LoaderData = {
 	user: Awaited<ReturnType<typeof getUser>>;
 	cspScriptNonce: string;
+	globals: IWindowGlobals;
+	ENV: Pick<EnvironmentType, 'IS_PRODUCTION'>;
 };
 
-export const loader: LoaderFunction = async ({request}) => {
+export const loader = async (args: LoaderArgs) => {
+	const { request } = args;
 	const cspScriptNonce = await cryptoRandomStringAsync({ length: 41 });
 
 	return json<LoaderData>({
 		user: await getUser(request),
 		cspScriptNonce,
+		globals: {
+			sentryDsn: Environment.IS_PRODUCTION ? Environment.SENTRY_DSN : undefined,
+		},
+		ENV: {
+			IS_PRODUCTION: Environment.IS_PRODUCTION,
+		},
 	});
 };
 
-function Document({ children }: { children: React.ReactNode }) {
+type TDocumentProps = {
+	cspScriptNonce?: string;
+	children?: React.ReactNode;
+  };
+
+  const Document: React.FC<TDocumentProps> = ({ cspScriptNonce, children }) => {
 	const transition = useTransition();
-	let { cspScriptNonce } = useLoaderData<LoaderData>();
 
 	if(typeof window !== "undefined") {
 		cspScriptNonce = "";
@@ -78,15 +93,22 @@ function Document({ children }: { children: React.ReactNode }) {
 }
 
 export default function App() {
+	const { cspScriptNonce, globals, ENV } = useLoaderData<typeof loader>();
 	const location = useLocation();
 
 	return (
-		<Document>
+		<Document cspScriptNonce={cspScriptNonce}>
 			{location.pathname === ROUTES.HOME ? <Outlet/> : (
 				<Layout>
 					<Outlet/>
 				</Layout>
 			)}
+			<script
+				suppressHydrationWarning
+				dangerouslySetInnerHTML={{
+					__html: `window.GLOBALS=${JSON.stringify(globals)};window.ENV=${JSON.stringify(ENV)}`,
+				}}
+        	/>
 		</Document>
 	);
 }

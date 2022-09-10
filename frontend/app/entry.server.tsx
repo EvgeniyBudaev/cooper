@@ -5,12 +5,12 @@ import { renderToString } from "react-dom/server";
 function getContentSecurityPolicy(nonce?: string) {
   let script_src: string;
   if (typeof nonce === "string" && nonce.length > 40) {
-    script_src = `'self' 'report-sample' 'nonce-${nonce}'`;
+    script_src = `'self' 'nonce-${nonce}'`;
   } else if (process.env.NODE_ENV === "development") {
     // Allow the <LiveReload /> component to load without a nonce in the error pages
-    script_src = "'self' 'report-sample' 'unsafe-inline'";
+    script_src = "'self' ''unsafe-inline'";
   } else {
-    script_src = "'self' 'report-sample'";
+    script_src = "'self'";
   }
 
   const connect_src =
@@ -21,7 +21,7 @@ function getContentSecurityPolicy(nonce?: string) {
   return (
     "default-src 'self'; " +
     `script-src ${script_src}; ` +
-    "style-src 'self' 'report-sample'; img-src 'self' data:; font-src 'self'; " +
+    "style-src 'self'; img-src 'self' data:; font-src 'self'; " +
     `connect-src ${connect_src}; ` +
     "media-src 'self'; object-src 'none'; " +
     "prefetch-src 'self'; " +
