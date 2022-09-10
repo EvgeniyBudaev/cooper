@@ -104,6 +104,7 @@ export default function App() {
 				</Layout>
 			)}
 			<script
+				nonce={cspScriptNonce}
 				suppressHydrationWarning
 				dangerouslySetInnerHTML={{
 					__html: `window.GLOBALS=${JSON.stringify(globals)};window.ENV=${JSON.stringify(ENV)}`,
