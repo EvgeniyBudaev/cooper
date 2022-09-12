@@ -17,6 +17,17 @@ export const Header: React.FC = () => {
 						<Logo/>
 					</NavLink>
 					<ul className="flex items-end text-white font-semibold h-10 min-h-full">
+					<li className="mr-12">
+							<NavLink
+								className={({isActive}) =>
+									`transition-all hover:text-transparent bg-clip-text bg-gradient-to-r from-[#5E3928] to-[#E4A16F]
+									 ${isActive
+										? "text-transparent bg-clip-text bg-gradient-to-r from-[#5E3928] to-[#E4A16F]"
+										: undefined}`}
+								to={"login"}>
+								Войти
+							</NavLink>
+						</li>
 						<li className="mr-12">
 							<NavLink
 								className={({isActive}) =>
