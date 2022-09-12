@@ -1,12 +1,13 @@
 import type { ActionFunction, LoaderFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, useCatch, useLoaderData } from "@remix-run/react";
+import { AuthenticityTokenInput, verifyAuthenticityToken } from "remix-utils";
 import invariant from "tiny-invariant";
 
 import type { Note } from "~/models/note.server";
 import { deleteNote } from "~/models/note.server";
 import { getNote } from "~/models/note.server";
-import { requireUserId } from "~/session.server";
+import { getSession, requireUserId } from "~/session.server";
 
 type LoaderData = {
   note: Note;
@@ -24,6 +25,9 @@ export const loader: LoaderFunction = async ({ request, params }) => {
 };
 
 export const action: ActionFunction = async ({ request, params }) => {
+  const session = await getSession(request);
+  await verifyAuthenticityToken(request, session);
+  
   const userId = await requireUserId(request);
   invariant(params.noteId, "noteId not found");
 
@@ -41,6 +45,7 @@ export default function NoteDetailsPage() {
       <p className="py-6">{data.note.body}</p>
       <hr className="my-4" />
       <Form method="post">
+        <AuthenticityTokenInput />
         <button
           type="submit"
           className="rounded bg-blue-500  py-2 px-4 text-white hover:bg-blue-600 focus:bg-blue-400"

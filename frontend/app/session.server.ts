@@ -11,7 +11,7 @@ export const sessionStorage = createCookieSessionStorage({
   cookie: {
     name: "__session",
     httpOnly: true,
-    maxAge: 0,
+    maxAge: undefined,
     path: "/",
     sameSite: "lax",
     secrets: [process.env.SESSION_SECRET],
@@ -22,9 +22,11 @@ export const sessionStorage = createCookieSessionStorage({
 const USER_SESSION_KEY = "userId";
 
 export async function getSession(request: Request) {
-  const cookie = request.headers.get("Cookie");
+  const cookie = request.headers.get("cookie");
   return sessionStorage.getSession(cookie);
 }
+
+export const { commitSession } = sessionStorage;
 
 export async function getUserId(request: Request): Promise<string | undefined> {
   const session = await getSession(request);

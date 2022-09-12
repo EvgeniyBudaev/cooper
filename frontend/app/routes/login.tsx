@@ -8,7 +8,7 @@ import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import * as React from "react";
 import {Form as RemixForm, formAction, FormProps} from "remix-forms";
 import { z } from "zod";
-import { createUserSession, getUserId } from "~/session.server";
+import { createUserSession, getSession, getUserId } from "~/session.server";
 import { verifyLogin } from "~/models/user.server";
 import { validateEmail } from "~/utils";
 import {login} from "~/api/user/user";
@@ -16,6 +16,7 @@ import type { UnpackData } from "remix-domains";
 import {inputFromForm, makeDomainFunction, pipe} from "remix-domains";
 import {getUser} from "~/domain/user";
 import {ErrorComponent} from "~/components";
+import { AuthenticityTokenInput, verifyAuthenticityToken } from "remix-utils";
 
 export const schema = z.object({
   email: z.string().nonempty().email(),
@@ -45,6 +46,9 @@ interface ActionData {
 }
 
 export const action: ActionFunction = async ({ request }) => {
+  const session = await getSession(request);
+  await verifyAuthenticityToken(request, session);
+  
   const formData = await request.formData();
   const email = formData.get("email");
   const password = formData.get("password");
@@ -121,6 +125,7 @@ export default function LoginPage() {
     <div className="flex min-h-full flex-col justify-center">
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" className="space-y-6">
+          <AuthenticityTokenInput />
           <div>
             <label
               htmlFor="email"

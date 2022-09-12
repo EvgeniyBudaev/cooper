@@ -13,7 +13,7 @@ import {
 import { Form, Link, useActionData, useSearchParams } from "@remix-run/react";
 import * as React from "react";
 
-import { getUserId, createUserSession } from "~/session.server";
+import { getUserId, createUserSession, getSession } from "~/session.server";
 
 import { createUser, getUserByEmail } from "~/models/user.server";
 import { validateEmail } from "~/utils";
@@ -21,6 +21,7 @@ import {ImageUpload} from "~/ui-kit";
 import {signup} from "~/api/user/user";
 import axios from "axios";
 import {backendBase} from "~/constants/paths";
+import { AuthenticityTokenInput, verifyAuthenticityToken } from "remix-utils";
 
 export const loader: LoaderFunction = async ({ request }) => {
   console.log("loader request: ", request);
@@ -39,6 +40,9 @@ interface ActionData {
 }
 
 export const action: ActionFunction = async ({ request }) => {
+  const session = await getSession(request);
+  await verifyAuthenticityToken(request, session);
+  
   const uploadHandler = unstable_createMemoryUploadHandler({
     maxFileSize: 500_000,
   });
@@ -137,6 +141,7 @@ export default function Join() {
     <div className="flex min-h-full flex-col justify-center">
       <div className="mx-auto w-full max-w-md px-8">
         <Form method="post" encType="multipart/form-data" className="space-y-6">
+          <AuthenticityTokenInput />
           <div>
             <label
               htmlFor="name"

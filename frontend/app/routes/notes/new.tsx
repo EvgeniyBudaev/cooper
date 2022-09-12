@@ -2,9 +2,10 @@ import type { ActionFunction } from "@remix-run/node";
 import { json, redirect } from "@remix-run/node";
 import { Form, useActionData } from "@remix-run/react";
 import * as React from "react";
+import { AuthenticityTokenInput, verifyAuthenticityToken } from "remix-utils";
 
 import { createNote } from "~/models/note.server";
-import { requireUserId } from "~/session.server";
+import { getSession, requireUserId } from "~/session.server";
 
 type ActionData = {
   errors?: {
@@ -14,6 +15,9 @@ type ActionData = {
 };
 
 export const action: ActionFunction = async ({ request }) => {
+  const session = await getSession(request);
+  await verifyAuthenticityToken(request, session);
+  
   const userId = await requireUserId(request);
 
   const formData = await request.formData();
@@ -62,6 +66,7 @@ export default function NewNotePage() {
         width: "100%",
       }}
     >
+      <AuthenticityTokenInput />
       <div>
         <label className="flex w-full flex-col gap-1">
           <span>Title: </span>

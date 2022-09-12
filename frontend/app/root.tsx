@@ -12,7 +12,7 @@ import {
 import {useLocation} from "@remix-run/react";
 import { cryptoRandomStringAsync } from "crypto-random-string";
 
-import {getUser} from "./session.server";
+import {commitSession, getSession, getUser} from "./session.server";
 import {ErrorComponent, Layout} from "~/components";
 import {ROUTES} from "~/constants/routes";
 import {Progress} from "~/ui-kit";
@@ -20,6 +20,7 @@ import { Environment } from "./enviroment.server";
 import type { EnvironmentType } from "./enviroment.server"
 import fonts from "./styles/fonts.css";
 import styles from "./styles/app.css";
+import { AuthenticityTokenProvider, createAuthenticityToken } from "remix-utils";
 
 export const links: LinksFunction = () => {
 	return [{rel: "stylesheet", href: styles}, {rel: "stylesheet", href: fonts}];
@@ -38,6 +39,7 @@ interface IWindowGlobals {
 type LoaderData = {
 	user: Awaited<ReturnType<typeof getUser>>;
 	cspScriptNonce: string;
+	csrfToken: string;
 	globals: IWindowGlobals;
 	ENV: Pick<EnvironmentType, 'IS_PRODUCTION'>;
 };
@@ -45,25 +47,32 @@ type LoaderData = {
 export const loader = async (args: LoaderArgs) => {
 	const { request } = args;
 	const cspScriptNonce = await cryptoRandomStringAsync({ length: 41 });
+	const session = await getSession(request);
+	const csrfToken = createAuthenticityToken(session);
 
 	return json<LoaderData>({
 		user: await getUser(request),
 		cspScriptNonce,
+		csrfToken,
 		globals: {
 			sentryDsn: Environment.IS_PRODUCTION ? Environment.SENTRY_DSN : undefined,
 		},
 		ENV: {
 			IS_PRODUCTION: Environment.IS_PRODUCTION,
 		},
+	}, {
+		headers: {
+			"Set-Cookie": await commitSession(session),
+		}
 	});
 };
 
 type TDocumentProps = {
 	cspScriptNonce?: string;
 	children?: React.ReactNode;
-  };
+};
 
-  const Document: React.FC<TDocumentProps> = ({ cspScriptNonce, children }) => {
+const Document: React.FC<TDocumentProps> = ({ cspScriptNonce, children }) => {
 	const transition = useTransition();
 
 	if(typeof window !== "undefined") {
@@ -93,24 +102,26 @@ type TDocumentProps = {
 }
 
 export default function App() {
-	const { cspScriptNonce, globals, ENV } = useLoaderData<typeof loader>();
+	const { cspScriptNonce, csrfToken, globals, ENV } = useLoaderData<typeof loader>();
 	const location = useLocation();
 
 	return (
-		<Document cspScriptNonce={cspScriptNonce}>
-			{location.pathname === ROUTES.HOME ? <Outlet/> : (
-				<Layout>
-					<Outlet/>
-				</Layout>
-			)}
-			<script
-				nonce={cspScriptNonce}
-				suppressHydrationWarning
-				dangerouslySetInnerHTML={{
-					__html: `window.GLOBALS=${JSON.stringify(globals)};window.ENV=${JSON.stringify(ENV)}`,
-				}}
-        	/>
-		</Document>
+		<AuthenticityTokenProvider token={csrfToken}>
+			<Document cspScriptNonce={cspScriptNonce}>
+				{location.pathname === ROUTES.HOME ? <Outlet/> : (
+					<Layout>
+						<Outlet/>
+					</Layout>
+				)}
+				<script
+					nonce={cspScriptNonce}
+					suppressHydrationWarning
+					dangerouslySetInnerHTML={{
+						__html: `window.GLOBALS=${JSON.stringify(globals)};window.ENV=${JSON.stringify(ENV)}`,
+					}}
+						/>
+			</Document>
+		</AuthenticityTokenProvider>
 	);
 }
 

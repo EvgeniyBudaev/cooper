@@ -54,6 +54,7 @@
     "remix": "^1.7.0",
     "remix-domains": "^0.3.2",
     "remix-forms": "^0.16.0",
+    "remix-utils": "^3.3.0",
     "tailwindcss-gradients": "^3.0.0",
     "tiny-invariant": "^1.2.0",
     "uuid": "^8.3.2",
