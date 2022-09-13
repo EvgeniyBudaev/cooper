@@ -1,5 +1,5 @@
 export enum EFormFields {
-    FirstName = 'firstName',
-    LastName = 'lastName',
+    Email = 'email',
+    Password = 'password',
   }
   

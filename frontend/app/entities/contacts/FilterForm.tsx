@@ -26,19 +26,19 @@ export const FilterForm: FC<TProps> = ({ isLoading, onChangeParams }) => {
     return (
         <div className="bg-light flex flex-col gap-8 rounded-2xl p-6">
             <Form className="flex flex-col gap-8" onSubmit={handleSubmit(onSubmit)}>
-            <AuthenticityTokenInput />
+                <AuthenticityTokenInput />
                 <div className="grid grid-cols-4 gap-8">
                     <Input
-                        {...register(EFormFields.FirstName)}
-                        hasError={!!errors[EFormFields.FirstName]}
-                        helperText={errors[EFormFields.FirstName]}
-                        placeholder={"FirstName"}
+                        {...register(EFormFields.Email)}
+                        hasError={!!errors[EFormFields.Email]}
+                        helperText={errors[EFormFields.Email]}
+                        placeholder={"Email"}
                     />
                     <Input
-                        {...register(EFormFields.LastName)}
-                        hasError={!!errors[EFormFields.LastName]}
-                        helperText={errors[EFormFields.LastName]}
-                        placeholder={"LastName"}
+                        {...register(EFormFields.Password)}
+                        hasError={!!errors[EFormFields.Password]}
+                        helperText={errors[EFormFields.Password]}
+                        placeholder={"Password"}
                     />
                 </div>
 

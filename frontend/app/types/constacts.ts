@@ -1,5 +1,5 @@
 export type TContactsData = {
 	id: string;
-	firstName: string;
-	lastName: string;
+	firstName?: string;
+	lastName?: string;
 };

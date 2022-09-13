@@ -12,10 +12,8 @@ type TProps = {
   };
 
 export const ContactsPage: FC<TProps> = (props) => {
-    const fetcher = useFetcher();
-    
-  // при загрузке страницы берем данные из loader, потом из fetcher
-  const contactsDetails: TContactsData = fetcher.data?.data ?? props.data;
+  const fetcher = useFetcher();
+
   const isLoading = fetcher.state !== 'idle';
 
   const onLoadContacts = useCallback(
@@ -28,12 +26,6 @@ export const ContactsPage: FC<TProps> = (props) => {
   return (
     <div>
         <FilterForm isLoading={isLoading} onChangeParams={onLoadContacts} />
-
-        <h2>First name: </h2>
-        <div>{contactsDetails.firstName}</div>
-        <br />
-        <h2>Last name: </h2>
-        <div>{contactsDetails.lastName}</div>
     </div>
   )
 };

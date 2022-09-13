@@ -1,18 +1,24 @@
-import type { LoaderArgs, MetaFunction } from '@remix-run/node';
+import type { ActionArgs, LoaderArgs, MetaFunction } from '@remix-run/node';
 import { json } from '@remix-run/node';
 import { useLoaderData } from '@remix-run/react';
+import { getContacts } from '~/entities/contacts';
 import { ContactsPage } from '~/pages/ContactsPage';
-import type { TContactsData } from '~/types/constacts';
+
+export const action = async (args: ActionArgs) => {
+	const { request } = args;
+	console.log("[action request]", request);
+	return null;
+}
 
 export const loader = async (args: LoaderArgs) => {
 	const { request } = args;
 	const url = new URL(request.url);
 	const params = {
-	  ...Object.fromEntries(url.searchParams),
-	  size: 10,
+	  ...Object.fromEntries(url.searchParams)
 	};
-	const data: TContactsData = await fetch("http://localhost:3000/contacts").then(res => res.json());
-	return json({data, params, title: "Контакты"});
+	const result: any = await getContacts(params);
+	console.log("[loader result]", result);
+	return json({data: "200", params, title: "Контакты"});
 }
 
 export const meta: MetaFunction = ({ data }) => {
@@ -20,12 +26,12 @@ export const meta: MetaFunction = ({ data }) => {
   };
 
 function Index() {
-	const { data, params } = useLoaderData<typeof loader>();
+	const { params } = useLoaderData<typeof loader>();
 
 	return (
 		<section>
 			<h1>ContactsPage</h1>
-			<ContactsPage data={data} params={params} />
+			<ContactsPage params={params} />
 		</section>
 	);
 }
