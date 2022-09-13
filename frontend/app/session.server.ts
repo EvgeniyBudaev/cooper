@@ -9,20 +9,22 @@ invariant(process.env.SESSION_SECRET, "SESSION_SECRET must be set");
 
 export const sessionStorage = createCookieSessionStorage({
   cookie: {
-    name: "__session",
+    name: "TB2__session",
     httpOnly: true,
     maxAge: undefined,
     path: "/",
-    sameSite: "lax",
-    secrets: [process.env.SESSION_SECRET],
-    secure: process.env.NODE_ENV === "production",
+    sameSite: "strict",
+    // secrets: [process.env.SESSION_SECRET],
+    // secure: process.env.NODE_ENV === "production",
+    secrets: [process.env.COOKIE_SECRET ?? ''],
+    secure: process.env.COOKIE_SECURE === 'true',
   },
 });
 
 const USER_SESSION_KEY = "userId";
 
 export async function getSession(request: Request) {
-  const cookie = request.headers.get("cookie");
+  const cookie = request.headers.get("Cookie");
   return sessionStorage.getSession(cookie);
 }
 
