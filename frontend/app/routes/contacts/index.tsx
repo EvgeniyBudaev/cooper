@@ -16,7 +16,7 @@ export const loader = async (args: LoaderArgs) => {
 	const params = {
 	  ...Object.fromEntries(url.searchParams)
 	};
-	const result: any = await getContacts(params);
+	const result: any = await getContacts(request, params);
 	console.log("[loader result]", result);
 	return json({data: "200", params, title: "Контакты"});
 }

@@ -8,7 +8,7 @@ const config = {
     },
 };
 
-// export const getContacts = async (body: any) => {
+// export const getContacts = async (request: any, body: any) => {
 //     const response = await axios.post("http://localhost:5000/api/v1/users/login", body, config);
 //     console.log("response: ", response);
 //     return response.data;
