@@ -21,15 +21,23 @@ function getContentSecurityPolicy(nonce?: string) {
   return (
     "default-src 'self'; " +
     `script-src ${script_src}; ` +
-    "style-src 'self'; img-src 'self' data:; font-src 'self'; " +
-    `connect-src ${connect_src}; ` +
-    "media-src 'self'; object-src 'none'; " +
-    "prefetch-src 'self'; " +
+    `style-src 'self' https: 'unsafe-inline'; ` +
+    "base-uri 'self'; " +
+    'block-all-mixed-content; ' +
     "child-src 'self'; " +
-    "frame-src 'self'; worker-src 'self' blob:; frame-ancestors 'none'; " +
+    `connect-src ${connect_src}; ` +
+    "img-src 'self' data:; " +
+    "font-src 'self' https: data:; " +
     "form-action 'self'; " +
-    "block-all-mixed-content; " +
-    "base-uri 'self'; manifest-src 'self'"
+    "frame-ancestors 'self'; " +
+    "frame-src 'self'; " +
+    "manifest-src 'self'; " +
+    "media-src 'self'; " +
+    "object-src 'none'; " +
+    "prefetch-src 'self'; " +
+    "script-src-attr 'none';" +
+    "worker-src 'self' blob:; " +
+    'upgrade-insecure-requests'
   );
 }
 
