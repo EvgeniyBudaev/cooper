@@ -1,67 +1,114 @@
+import { PassThrough } from "stream";
 import type { EntryContext } from "@remix-run/node";
+import { Response } from "@remix-run/node";
 import { RemixServer } from "@remix-run/react";
-import { renderToString } from "react-dom/server";
+import isbot from "isbot";
+import { renderToPipeableStream } from "react-dom/server";
+import { getContentSecurityPolicy } from "./utils/security";
 
-function getContentSecurityPolicy(nonce?: string) {
-  let script_src: string;
-  if (typeof nonce === "string" && nonce.length > 40) {
-    script_src = `'self' 'nonce-${nonce}'`;
-  } else if (process.env.NODE_ENV === "development") {
-    // Allow the <LiveReload /> component to load without a nonce in the error pages
-    script_src = "'self' ''unsafe-inline'";
-  } else {
-    script_src = "'self'";
-  }
-
-  const connect_src =
-    process.env.NODE_ENV === "development"
-      ? "'self' ws://localhost:*"
-      : "'self'";
-
-  return (
-    "default-src 'self'; " +
-    `script-src ${script_src}; ` +
-    `style-src 'self' https: 'unsafe-inline'; ` +
-    "base-uri 'self'; " +
-    'block-all-mixed-content; ' +
-    "child-src 'self'; " +
-    `connect-src ${connect_src}; ` +
-    "img-src 'self' data:; " +
-    "font-src 'self' https: data:; " +
-    "form-action 'self'; " +
-    "frame-ancestors 'self'; " +
-    "frame-src 'self'; " +
-    "manifest-src 'self'; " +
-    "media-src 'self'; " +
-    "object-src 'none'; " +
-    "prefetch-src 'self'; " +
-    "script-src-attr 'none';" +
-    "worker-src 'self' blob:; " +
-    'upgrade-insecure-requests'
-  );
-}
+const ABORT_DELAY = 5000;
 
 export default function handleRequest(
   request: Request,
   responseStatusCode: number,
   responseHeaders: Headers,
-  remixContext: EntryContext
+  remixContext: EntryContext,
+) {
+  return isbot(request.headers.get("user-agent"))
+    ? handleBotRequest(request, responseStatusCode, responseHeaders, remixContext)
+    : handleBrowserRequest(request, responseStatusCode, responseHeaders, remixContext);
+}
+
+function handleBotRequest(
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext,
 ) {
   const nonce: string | undefined =
-    remixContext.appState.catchBoundaryRouteId === "root" &&
-      remixContext.appState.error
-        ? undefined
-        : remixContext.routeData.root?.cspScriptNonce;
+    remixContext.appState.catchBoundaryRouteId === "root" && remixContext.appState.error
+      ? undefined
+      : remixContext.routeData.root?.cspScriptNonce;
 
-  const markup = renderToString(
-    <RemixServer context={remixContext} url={request.url} />
-  );
+  return new Promise((resolve, reject) => {
+    let didError = false;
 
-  responseHeaders.set("Content-Type", "text/html");
-  responseHeaders.set("Content-Security-Policy", getContentSecurityPolicy(nonce));
+    const { pipe, abort } = renderToPipeableStream(
+      <RemixServer context={remixContext} url={request.url} />,
+      {
+        onAllReady() {
+          const body = new PassThrough();
 
-  return new Response("<!DOCTYPE html>" + markup, {
-    status: responseStatusCode,
-    headers: responseHeaders,
+          responseHeaders.set("Content-Type", "text/html");
+          responseHeaders.set("Content-Security-Policy", getContentSecurityPolicy(nonce));
+
+          resolve(
+            new Response(body, {
+              headers: responseHeaders,
+              status: didError ? 500 : responseStatusCode,
+            }),
+          );
+
+          pipe(body);
+        },
+        onShellError(error: unknown) {
+          reject(error);
+        },
+        onError(error: unknown) {
+          didError = true;
+
+          console.error(error);
+        },
+      },
+    );
+
+    setTimeout(abort, ABORT_DELAY);
+  });
+}
+
+function handleBrowserRequest(
+  request: Request,
+  responseStatusCode: number,
+  responseHeaders: Headers,
+  remixContext: EntryContext,
+) {
+  const nonce: string | undefined =
+    remixContext.appState.catchBoundaryRouteId === "root" && remixContext.appState.error
+      ? undefined
+      : remixContext.routeData.root?.cspScriptNonce;
+
+  return new Promise((resolve, reject) => {
+    let didError = false;
+
+    const { pipe, abort } = renderToPipeableStream(
+      <RemixServer context={remixContext} url={request.url} />,
+      {
+        onShellReady() {
+          const body = new PassThrough();
+
+          responseHeaders.set("Content-Type", "text/html");
+          responseHeaders.set("Content-Security-Policy", getContentSecurityPolicy(nonce));
+
+          resolve(
+            new Response(body, {
+              headers: responseHeaders,
+              status: didError ? 500 : responseStatusCode,
+            }),
+          );
+
+          pipe(body);
+        },
+        onShellError(err: unknown) {
+          reject(err);
+        },
+        onError(error: unknown) {
+          didError = true;
+
+          console.error(error);
+        },
+      },
+    );
+
+    setTimeout(abort, ABORT_DELAY);
   });
 }

@@ -2,7 +2,11 @@ import React from "react";
 import {Container, Footer, Header} from "~/components";
 import {Breadcrumbs} from "~/ui-kit";
 
-export const Layout: React.FC = ({children}) => {
+type TProps = {
+	children: React.ReactNode;
+};
+
+export const Layout: React.FC<TProps> = ({children}) => {
 	return (
 		<>
 			<Header/>

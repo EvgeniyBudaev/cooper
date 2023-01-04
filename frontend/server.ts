@@ -1,15 +1,14 @@
-const path = require("path");
-const express = require("express");
-const compression = require("compression");
-const morgan = require("morgan");
-const helmet = require("helmet");
-const { createRequestHandler } = require("@remix-run/express");
+import compression from "compression";
+import express from "express";
+import helmet from "helmet";
+import path from "path";
+import { createRequestHandler } from "@remix-run/express";
 
 const BUILD_DIR = path.join(process.cwd(), "build");
+const MODE = process.env.NODE_ENV;
+const isProduction = MODE === "production";
 
 const app = express();
-
-app.use(compression());
 
 app.use(helmet.crossOriginEmbedderPolicy());
 app.use(helmet.crossOriginOpenerPolicy());
@@ -26,37 +25,62 @@ app.use(helmet.permittedCrossDomainPolicies());
 app.use(helmet.referrerPolicy());
 app.use(helmet.xssFilter());
 
+app.use((req, res, next) => {
+  // helpful headers:
+  res.set("Strict-Transport-Security", `max-age=${60 * 60 * 24 * 365 * 100}`);
+
+  let hostUrlObj;
+
+  try {
+    hostUrlObj = new URL(process.env.HOST_URL as string);
+  } catch (e) {
+    next();
+    return;
+  }
+
+  // /clean-urls/ -> /clean-urls
+  if (req.path.endsWith("/") && req.path.length > 1 && hostUrlObj.hostname === req.hostname) {
+    const query = req.url.slice(req.path.length);
+    const safePath = req.path.slice(0, -1).replace(/\/+/g, "/");
+    res.redirect(301, safePath + query);
+    return;
+  }
+  next();
+});
+
+app.use(compression());
+
 // http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
 app.disable("x-powered-by");
 
 // Remix fingerprints its assets so we can cache forever.
-app.use(
-  "/build",
-  express.static("public/build", { immutable: true, maxAge: "1y" })
-);
+app.use("/build", express.static("public/build", { immutable: true, maxAge: "1y" }));
 
 // Everything else (like favicon.ico) is cached for an hour. You may want to be
 // more aggressive with this caching.
 app.use(express.static("public", { maxAge: "1h" }));
 
-app.use(morgan("tiny"));
+function loadBuild() {
+  let build = require(BUILD_DIR);
+  return build;
+}
 
 app.all(
   "*",
-  process.env.NODE_ENV === "development"
-    ? (req, res, next) => {
-        purgeRequireCache();
-
-        return createRequestHandler({
-          build: require(BUILD_DIR),
-          mode: process.env.NODE_ENV,
-        })(req, res, next);
-      }
-    : createRequestHandler({
-        build: require(BUILD_DIR),
-        mode: process.env.NODE_ENV,
-      })
+  isProduction
+    ? createRequestHandler({
+      build: loadBuild(),
+    })
+    : (...args) => {
+      purgeRequireCache();
+      const requestHandler = createRequestHandler({
+        build: loadBuild(),
+        mode: MODE,
+      });
+      return requestHandler(...args);
+    },
 );
+
 const port = process.env.PORT || 3000;
 
 app.listen(port, () => {

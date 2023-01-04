@@ -21,6 +21,7 @@ import type { EnvironmentType } from "./enviroment.server"
 import fonts from "./styles/fonts.css";
 import styles from "./styles/app.css";
 import { AuthenticityTokenProvider, createAuthenticityToken } from "remix-utils";
+import { createBoundaries } from "./utils/boundaries/createBoundaries";
 
 export const links: LinksFunction = () => {
 	return [{rel: "stylesheet", href: styles}, {rel: "stylesheet", href: fonts}];
@@ -36,7 +37,7 @@ interface IWindowGlobals {
 	sentryDsn?: string;
   }
 
-type LoaderData = {
+type RootLoaderData = {
 	user: Awaited<ReturnType<typeof getUser>>;
 	cspScriptNonce: string;
 	csrfToken: string;
@@ -50,7 +51,7 @@ export const loader = async (args: LoaderArgs) => {
 	const session = await getSession(request);
 	const csrfToken = createAuthenticityToken(session);
 
-	return json<LoaderData>({
+	return json<RootLoaderData>({
 		user: await getUser(request),
 		cspScriptNonce,
 		csrfToken,
@@ -70,9 +71,10 @@ export const loader = async (args: LoaderArgs) => {
 type TDocumentProps = {
 	cspScriptNonce?: string;
 	children?: React.ReactNode;
+	env?: RootLoaderData["ENV"];
 };
 
-const Document: React.FC<TDocumentProps> = ({ cspScriptNonce, children }) => {
+const Document: React.FC<TDocumentProps> = ({ cspScriptNonce, children, env }) => {
 	const transition = useTransition();
 
 	if(typeof window !== "undefined") {
@@ -95,7 +97,7 @@ const Document: React.FC<TDocumentProps> = ({ cspScriptNonce, children }) => {
 		{children}
 		<ScrollRestoration nonce={cspScriptNonce} />
 		<Scripts nonce={cspScriptNonce} />
-		{process.env.NODE_ENV === 'development' ? <LiveReload nonce={cspScriptNonce} /> : null}
+		{env?.IS_PRODUCTION === false && <LiveReload nonce={cspScriptNonce} />}
 		</body>
 		</html>
 	);
@@ -107,7 +109,7 @@ export default function App() {
 
 	return (
 		<AuthenticityTokenProvider token={csrfToken}>
-			<Document cspScriptNonce={cspScriptNonce}>
+			<Document cspScriptNonce={cspScriptNonce} env={ENV}>
 				{location.pathname === ROUTES.HOME ? <Outlet/> : (
 					<Layout>
 						<Outlet/>
@@ -125,33 +127,6 @@ export default function App() {
 	);
 }
 
-export function ErrorBoundary({ error }: { error: Error }) {
-	return (
-		<Document>
-			<ErrorComponent message={error.message} />
-		</Document>
-	);
-}
-
-export function CatchBoundary() {
-	const caught = useCatch();
-
-	let message;
-	switch (caught.status) {
-		case 401:
-			message = <div>Нет прав к этой странице..</div>;
-			break;
-		case 404:
-			message = <div>Страница не сущестует.</div>;
-			break;
-
-		default:
-			throw new Error(caught.data || caught.statusText);
-	}
-
-	return (
-		<Document>
-			<ErrorComponent message={`${caught.status} ${caught.statusText} ${message}`} />
-		</Document>
-	);
-}
+export const { ErrorBoundary, CatchBoundary } = createBoundaries({
+	Layout: Document,
+});

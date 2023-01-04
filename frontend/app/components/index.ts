@@ -8,3 +8,5 @@ import ProductListItem from "./ProductListItem";
 import Search from "./Search";
 
 export { Container, ErrorComponent, Footer, Header, Layout, ProductList, ProductListItem, Search };
+export * from  "./Error";
+export * from "./ErrorBoundary";
