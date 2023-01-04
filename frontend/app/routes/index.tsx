@@ -1,7 +1,9 @@
-import {HomePage} from "~/pages";
+import { inputFromSearch } from "remix-domains";
 import {Link} from "@remix-run/react";
+import type { LoaderArgs } from "@remix-run/node";
 import {ROUTES} from "~/constants/routes";
 import * as server from "~/mocks";
+import {HomePage} from "~/pages";
 
 export const handle = {
   breadcrumb: () => <Link
@@ -16,6 +18,15 @@ export const handle = {
 }`}</pre>
   )
 };
+
+export const loader = async (args: LoaderArgs) => {
+  const { request } = args;
+  const url = new URL(request.url);
+  const formValues = inputFromSearch(url.searchParams);
+  console.log("[Home loader formValues] ", formValues);
+
+  return null;
+}
 
 export default function Index() {
   server.init();
